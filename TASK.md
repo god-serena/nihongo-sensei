@@ -19,7 +19,7 @@
 ---
 
 ## Milestone 2: Dictionary Engine (JMdict)
-- [ ] **2.1 Provider Interface**: Create abstract base class `DictionaryProvider` in `backend/app/dictionaries/base.py` defining `lookup(term: str) -> dict`.
+- [x] **2.1 Provider Interface**: Create abstract base class `DictionaryProvider` in `backend/app/dictionaries/base.py` defining `lookup(term: str) -> dict`.
 - [ ] **2.2 JMdict Parser CLI**: Add `DictionaryEntry` model to `backend/app/models.py`, generate/apply the Alembic migration for it, then create ingestion script `backend/app/ingest_dictionary.py` to parse JMdict XML and populate `dictionary_entries` in Postgres.
 - [ ] **2.3 JMdict Lookups**: Implement `JMdictProvider` class in `backend/app/dictionaries/jmdict.py`.
 - [ ] **2.4 Dictionary Unit Tests**: Write pytest in `backend/tests/test_dictionary.py` validating exact-match lookups for Japanese terms (e.g., "日本語", "琴").
