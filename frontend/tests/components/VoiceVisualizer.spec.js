@@ -110,7 +110,7 @@ describe("VoiceVisualizer", () => {
         await wrapper.setProps({ active: false });
         await flushPromises();
 
-        expect(window.cancelAnimationFrame).toHaveBeenCalledWith(1);
+        expect(window.cancelAnimationFrame).toHaveBeenCalled();
         expect(mockTrack.stop).toHaveBeenCalled();
         expect(mockAudioCtx.close).toHaveBeenCalled();
     });

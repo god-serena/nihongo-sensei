@@ -6,7 +6,24 @@ default_language_version:
   python: python3
 
 repos:
-  # Backend (Python)
+  # Automated Test Verification (Must pass before commit)
+  - repo: local
+    hooks:
+      - id: backend-pytest
+        name: Backend Pytest (unit & integration tests)
+        entry: bash -c 'cd backend && PYTHONPATH=. .venv/bin/pytest'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: frontend-vitest
+        name: Frontend Vitest (component tests)
+        entry: bash -c 'cd frontend && npm test'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  # Backend (Python Linting & Formatting)
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.0
     hooks:
@@ -28,7 +45,7 @@ repos:
           - prettier@3.9.6
         args: ["--fix"]
 
-  # Frontend (JavaScript/Vue) — Prettier (run via node_modules)
+  # Frontend (JavaScript/Vue) — Prettier
   - repo: local
     hooks:
       - id: prettier
