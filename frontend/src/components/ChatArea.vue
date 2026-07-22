@@ -35,7 +35,7 @@
           'px-6 py-2 rounded-full font-bold text-sm transition-colors',
               audioStore.isListening ? 'bg-red-500 hover:bg-red-400' : 'bg-indigo-600 hover:bg-indigo-500'
             ]"
-        :disabled="wsStatus !== 'open'"
+        :disabled="chatStore.wsStatus !== 'open'"
       >
         {{ audioStore.isListening ? '● Releasing...' : 'Push-to-Talk' }}
       </button>
@@ -50,8 +50,8 @@
       </button>
 
       <!-- WS status indicator -->
-      <span v-if="wsStatus !== 'open'" class="text-xs text-gray-400">
-        {{ wsStatus }}
+      <span v-if="chatStore.wsStatus !== 'open'" class="text-xs text-gray-400">
+        {{ chatStore.wsStatus }}
       </span>
     </div>
   </div>

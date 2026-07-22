@@ -76,10 +76,14 @@ function triggerFileInput() {
   fileInput.value?.click()
 }
 
-function onFileSelect(event) {
+async function onFileSelect(event) {
   const file = event.target.files?.[0]
   if (file) {
-    documentStore.upload(file)
+    try {
+      await documentStore.upload(file)
+    } catch {
+      // Error is set in documentStore.error
+    }
     // Reset so the same file can be re-uploaded
     event.target.value = ''
   }
@@ -89,7 +93,11 @@ async function onDrop(event) {
   isDragOver.value = false
   const file = event.dataTransfer?.files?.[0]
   if (file) {
-    await documentStore.upload(file)
+    try {
+      await documentStore.upload(file)
+    } catch {
+      // Error is set in documentStore.error
+    }
   }
 }
 </script>

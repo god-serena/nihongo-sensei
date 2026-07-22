@@ -91,10 +91,8 @@ describe('DocumentManager.vue', () => {
   })
 
   it('shows error feedback on upload failure', async () => {
-    const err = new Error('Network error')
-    let resolveUpload, rejectUpload
+    let rejectUpload
     const uploadPromise = new Promise((resolve, reject) => {
-      resolveUpload = resolve
       rejectUpload = reject
     })
     mockUploadDocument.mockReturnValue(uploadPromise)
@@ -109,13 +107,13 @@ describe('DocumentManager.vue', () => {
     // Still uploading before rejection
     expect(wrapper.text()).toContain('Uploading document')
 
-    rejectUpload(err) // reject the promise
-    await wrapper.vm.$nextTick()
+    // Reject the deferred promise
+    const networkErr = Object.assign(new Error('Network error'), { name: 'NetworkError' })
+    rejectUpload(networkErr)
+    await new Promise(r => setTimeout(r, 10))
     await wrapper.vm.$nextTick()
 
     expect(wrapper.text()).toContain('Network error')
-    // Clean up the promise to avoid unhandled rejection
-    uploadPromise.catch(() => {}) // already caught by the store
   })
 
   it('toggles drag-over class on drag events', async () => {
