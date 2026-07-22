@@ -37,7 +37,7 @@
 
 ## Milestone 4: FastAPI Router & LLM Orchestrator
 - [x] **4.1 Unified LLM Client**: Create `backend/app/llm.py` supporting OpenAI-compatible endpoints (LM Studio, Ollama) and Gemini API.
-- [ ] **4.2 Session Summaries**: Write LLM prompt and JSON parser in `backend/app/summaries.py` to generate structured session summaries.
+- [x] **4.2 Session Summaries**: Write LLM prompt and JSON parser in `backend/app/summaries.py` to generate structured session summaries.
 - [ ] **4.3 API Endpoints**: Implement FastAPI routes in modular router files under `backend/app/routers/` (`health.py`, `chat.py`, `rag.py`, `summaries.py`) exposing `/api/health`, `/api/chat`, `/api/rag/upload`, `/api/summaries`. `backend/app/main.py` only imports and registers these via `app.include_router()` — no route logic directly in `main.py`.
 - [ ] **4.4 API Integration Tests**: Write pytest in `backend/tests/test_api.py` testing FastAPI endpoints using `httpx.AsyncClient`.
 
