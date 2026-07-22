@@ -174,6 +174,76 @@ voiced-teacher/
 
 ---
 
+## Local Development with Docker
+
+All services run via `docker compose` — no manual installs needed.
+
+### Prerequisites
+- Docker & Docker Compose installed
+- `.env` file (copy from `.env.example`)
+
+### Quick Start
+
+```bash
+# 1. Copy env and bring up all services
+cp .env.example .env
+docker compose up -d
+
+# 2. Run backend migrations (first time only)
+docker compose exec backend alembic upgrade head
+
+# 3. (Optional) Ingest dictionaries
+docker compose exec backend python -m app.ingest_dictionary jmdict
+
+# 4. Open the app
+# Frontend dev server → http://localhost:5173
+# Backend API    → http://localhost:8000
+# PostgreSQL     → localhost:5432
+```
+
+### Useful Commands
+
+```bash
+# View logs for all services
+docker compose logs -f
+
+# View logs for a specific service
+docker compose logs -f backend
+
+# Run backend tests
+docker compose exec backend pytest
+
+# Run frontend tests
+docker compose exec frontend npm test
+
+# Stop all services
+docker compose down
+
+# Stop and remove volumes (wipes the database)
+docker compose down -v
+
+# Restart a single service
+docker compose restart backend
+```
+
+### Services Overview
+
+| Service      | Port(s)    | Description                          |
+|-------------|------------|--------------------------------------|
+| `postgres`  | `5432`     | PostgreSQL + pgvector                |
+| `backend`   | `8000`     | FastAPI sidecar (Python 3.12)        |
+| `frontend`  | `5173`     | Vue 3 + Vite dev server              |
+| `electron`  | *(optional)* | Isolated Electron (requires X11)    |
+
+### Environment Variables
+
+See `.env.example` for all configurable variables. Key ones:
+- `OLLAMA_BASE_URL` — local Ollama instance URL
+- `LM_STUDIO_BASE_URL` — local LM Studio URL
+- `GEMINI_API_KEY` / `OPENAI_API_KEY` — frontier API keys (optional)
+
+---
+
 ## Verification Plan
 
 ### Automated Tests
