@@ -28,7 +28,7 @@
 
 ## Milestone 3: RAG & Vector Pipeline
 - [x] **3.1 Chunking Utility**: Write document loader and recursive text splitter in `backend/app/rag.py`.
-- [ ] **3.2 Embedding Generation**: Implement local HuggingFace embedding generator interface using `nomic-embed-text` or similar lightweight model.
+- [x] **3.2 Embedding Generation**: Implement local HuggingFace embedding generator interface using `nomic-embed-text` or similar lightweight model.
 - [ ] **3.3 pgvector Storage**: Add a `DocumentChunk` model (with `pgvector` embedding column) to `backend/app/models.py`, generate/apply the Alembic migration, then write functions to store and query document chunks with vector similarity in Postgres via `pgvector`.
 - [ ] **3.4 RAG Unit Tests**: Write pytest in `backend/tests/test_rag.py` to test document ingestion and similarity retrieval.
 
