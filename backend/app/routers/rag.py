@@ -41,6 +41,7 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
 
     # Store chunks with embeddings
     from app.rag import store_document_chunks
+
     store_document_chunks(db, document.id, chunks, embeddings)
 
     return {"document_id": document.id, "chunk_count": len(chunks)}

@@ -1,0 +1,40 @@
+# Pre-commit hooks for KotoSensei
+# Run `pre-commit run --all-files` to test manually.
+# Run `pre-commit install` to install the git hook.
+
+default_language_version:
+  python: python3
+
+repos:
+  # Backend (Python)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.15.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+        files: "^backend/"
+      - id: ruff-format
+        files: "^backend/"
+
+  # Frontend (JavaScript/Vue) — ESLint
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v10.7.0
+    hooks:
+      - id: eslint
+        files: "^frontend/src/"
+        additional_dependencies:
+          - eslint@10.7.0
+          - '@vue/eslint-config-prettier@10.2.0'
+          - prettier@3.9.6
+        args: ["--fix"]
+
+  # Frontend (JavaScript/Vue) — Prettier (run via node_modules)
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: node frontend/node_modules/.bin/prettier --write
+        language: node
+        files: "^frontend/\\.(js|ts|vue|json|css|html|mjs|cjs)$"
+        additional_dependencies:
+          - prettier@3.9.6

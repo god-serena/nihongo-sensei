@@ -56,11 +56,11 @@ class RecursiveCharacterTextSplitter:
         for i, sep in enumerate(separators):
             if sep == "":
                 separator = sep
-                remaining_separators = separators[i + 1:]
+                remaining_separators = separators[i + 1 :]
                 break
             if sep in text:
                 separator = sep
-                remaining_separators = separators[i + 1:]
+                remaining_separators = separators[i + 1 :]
                 break
 
         # Split the text
@@ -77,7 +77,7 @@ class RecursiveCharacterTextSplitter:
                     # No more separators, split by characters
                     start = 0
                     while start < len(split):
-                        final_splits.append(split[start:start + self.chunk_size])
+                        final_splits.append(split[start : start + self.chunk_size])
                         start += self.chunk_size
                 else:
                     final_splits.extend(self._split_text(split, remaining_separators))
@@ -103,14 +103,12 @@ class RecursiveCharacterTextSplitter:
                 # Keep items from the end of current_chunk to respect overlap
                 while current_chunk:
                     current_chunk.pop(0)
-                    new_len = (
-                        sum(len(x) for x in current_chunk)
-                        + (len(separator) * (len(current_chunk) - 1)
-                           if len(current_chunk) > 1
-                           else 0)
+                    new_len = sum(len(x) for x in current_chunk) + (
+                        len(separator) * (len(current_chunk) - 1) if len(current_chunk) > 1 else 0
                     )
-                    new_added_len = split_len + \
-                        (len(separator) if current_chunk and separator else 0)
+                    new_added_len = split_len + (
+                        len(separator) if current_chunk and separator else 0
+                    )
                     if new_len + new_added_len <= self.chunk_size and new_len <= self.chunk_overlap:
                         current_length = new_len + new_added_len
                         current_chunk.append(split)
@@ -140,11 +138,7 @@ def store_document_chunks(
     Store document chunks with their vector embeddings in PostgreSQL.
     """
     for chunk, embedding in zip(chunks, embeddings):
-        db_chunk = DocumentChunk(
-            document_id=document_id,
-            content=chunk,
-            embedding=embedding
-        )
+        db_chunk = DocumentChunk(document_id=document_id, content=chunk, embedding=embedding)
         db.add(db_chunk)
     db.commit()
 

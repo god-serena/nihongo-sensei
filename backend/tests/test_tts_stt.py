@@ -90,7 +90,7 @@ class TestTTSGenerator:
     @pytest.mark.asyncio
     async def test_synthesize_returns_bytes(self) -> None:
         """synthesize() should return bytes from the mocked stream."""
-        fake_chunks = [b"\x1B", b"\xAE", b"\x80", b"\x97"]  # fake MP3 header chunks
+        fake_chunks = [b"\x1b", b"\xae", b"\x80", b"\x97"]  # fake MP3 header chunks
 
         class FakeCommunicate:
             async def __aenter__(self):
@@ -109,13 +109,13 @@ class TestTTSGenerator:
 
         assert isinstance(result, bytes)
         # Verify chunks were concatenated
-        assert b"\x1B" in result
+        assert b"\x1b" in result
         mock_comm.assert_called_once_with("こんにちは", "ja-JP-NanamiNeural")
 
     @pytest.mark.asyncio
     async def test_synthesize_to_file_writes_correct_path(self) -> None:
         """synthesize_to_file() should write bytes to the specified path."""
-        fake_audio = b"\x1B\xAE\x80\x97"  # fake MP3 header
+        fake_audio = b"\x1b\xae\x80\x97"  # fake MP3 header
 
         class FakeCommunicate:
             async def __aenter__(self):
@@ -125,8 +125,8 @@ class TestTTSGenerator:
                 pass
 
             async def stream(self):
-                yield b"\x1B"
-                yield b"\xAE"
+                yield b"\x1b"
+                yield b"\xae"
                 yield b"\x80"
                 yield b"\x97"
 

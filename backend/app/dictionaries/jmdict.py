@@ -25,10 +25,14 @@ class JMdictProvider(DictionaryProvider):
         }
         """
         # Search for term in the kanji or reading JSONB lists
-        entries = self.db.query(DictionaryEntry).filter(
-            (DictionaryEntry.kanji.contains([term]))
-            | (DictionaryEntry.reading.contains([term]))
-        ).all()
+        entries = (
+            self.db.query(DictionaryEntry)
+            .filter(
+                (DictionaryEntry.kanji.contains([term]))
+                | (DictionaryEntry.reading.contains([term]))
+            )
+            .all()
+        )
 
         return {
             "term": term,
@@ -37,8 +41,8 @@ class JMdictProvider(DictionaryProvider):
                     "sequence_number": entry.sequence_number,
                     "kanji": entry.kanji,
                     "reading": entry.reading,
-                    "senses": entry.senses
+                    "senses": entry.senses,
                 }
                 for entry in entries
-            ]
+            ],
         }

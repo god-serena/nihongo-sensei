@@ -12,7 +12,14 @@ vi.mock("@/services/api", () => ({
         close: vi.fn(),
     })),
     uploadDocument: vi.fn().mockResolvedValue({ id: 1, title: "test.txt", chunk_count: 3 }),
-    generateSummary: vi.fn().mockResolvedValue({ id: 1, topics: ["Greetings"], new_vocabulary: [], common_mistakes: [] }),
+    generateSummary: vi
+        .fn()
+        .mockResolvedValue({
+            id: 1,
+            topics: ["Greetings"],
+            new_vocabulary: [],
+            common_mistakes: [],
+        }),
     getSummaries: vi.fn().mockResolvedValue([]),
 }));
 
@@ -24,8 +31,12 @@ describe("HomeView.vue", () => {
                 plugins: [pinia],
                 stubs: {
                     ChatArea: { template: "<div class='stub-chat-area'>ChatArea Stub</div>" },
-                    DocumentManager: { template: "<div class='stub-doc-manager'>DocumentManager Stub</div>" },
-                    SessionSummaries: { template: "<div class='stub-session-summaries'>SessionSummaries Stub</div>" },
+                    DocumentManager: {
+                        template: "<div class='stub-doc-manager'>DocumentManager Stub</div>",
+                    },
+                    SessionSummaries: {
+                        template: "<div class='stub-session-summaries'>SessionSummaries Stub</div>",
+                    },
                 },
             },
         });
@@ -46,20 +57,24 @@ describe("HomeView.vue", () => {
         const wrapper = mountComponent();
         const tabs = wrapper.findAll("button");
         const tabTexts = tabs.map((btn) => btn.text());
-        expect(tabTexts.some((t) => t.includes("Study Materials") || t.includes("Documents"))).toBe(true);
+        expect(tabTexts.some((t) => t.includes("Study Materials") || t.includes("Documents"))).toBe(
+            true,
+        );
         expect(tabTexts.some((t) => t.includes("Summaries") || t.includes("Insights"))).toBe(true);
     });
 
     it("toggles auxiliary view when tab is clicked", async () => {
         const wrapper = mountComponent();
-        
+
         // Default tab should show DocumentManager
         expect(wrapper.find(".stub-doc-manager").exists()).toBe(true);
         expect(wrapper.find(".stub-session-summaries").exists()).toBe(false);
 
         // Find the summaries tab button and click it
         const buttons = wrapper.findAll("button");
-        const summariesBtn = buttons.find((btn) => btn.text().includes("Summaries") || btn.text().includes("Insights"));
+        const summariesBtn = buttons.find(
+            (btn) => btn.text().includes("Summaries") || btn.text().includes("Insights"),
+        );
         expect(summariesBtn).toBeDefined();
 
         await summariesBtn.trigger("click");

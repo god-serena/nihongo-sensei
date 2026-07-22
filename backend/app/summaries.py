@@ -75,16 +75,12 @@ def generate_summary(
     # Validate new_vocabulary entries
     for entry in summary.get("new_vocabulary", []):
         if not isinstance(entry, dict) or "term" not in entry:
-            raise SummaryParseError(
-                f"'new_vocabulary' contains invalid entry: {entry}"
-            )
+            raise SummaryParseError(f"'new_vocabulary' contains invalid entry: {entry}")
 
     # Validate mistakes entries
     for entry in summary.get("mistakes", []):
         if not isinstance(entry, dict) or "original" not in entry:
-            raise SummaryParseError(
-                f"'mistakes' contains invalid entry: {entry}"
-            )
+            raise SummaryParseError(f"'mistakes' contains invalid entry: {entry}")
 
     return summary
 

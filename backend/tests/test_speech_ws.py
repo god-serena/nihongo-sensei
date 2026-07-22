@@ -17,6 +17,7 @@ def client():
 
 # ── Helper fixtures ─────────────────────────────────────────────────────────────
 
+
 @pytest.fixture(autouse=True)
 def mock_whisper():
     """Patch WhisperTranscriber at the import site in the speech router."""
@@ -42,6 +43,7 @@ def mock_tts():
 def mock_llm():
     """Patch LLMClient at the import site in the speech router."""
     with patch("app.routers.speech.LLMClient") as MockLLM:
+
         async def fast_stream(messages, temperature=0.7):
             for token in ["Hello", " world"]:
                 yield token
@@ -55,6 +57,7 @@ def mock_llm():
 
 # ── Test: ping → pong ─────────────────────────────────────────────────────────────
 
+
 def test_ping_pong(client):
     """A ping returns a pong."""
     with client.websocket_connect("/ws/speech") as ws:
@@ -63,6 +66,7 @@ def test_ping_pong(client):
 
 
 # ── Test: full audio → transcript + tokens + done flow ────────────────────────────
+
 
 def test_audio_pipeline(client):
     """Sending an audio blob produces a transcript, token messages, and a final 'done'."""
@@ -92,6 +96,7 @@ def test_audio_pipeline(client):
 
 # ── Test: missing audio data ─────────────────────────────────────────────────────
 
+
 def test_missing_audio_data(client):
     """Audio message without a data field returns an error and keeps connection alive."""
     with client.websocket_connect("/ws/speech") as ws:
@@ -106,6 +111,7 @@ def test_missing_audio_data(client):
 
 
 # ── Test: bad base64 data ─────────────────────────────────────────────────────────
+
 
 def test_bad_base64(client):
     """Invalid base64 (non-alphabet characters) returns an error message."""
@@ -122,6 +128,7 @@ def test_bad_base64(client):
 
 
 # ── Test: cancel mid-stream stops generation ─────────────────────────────────────
+
 
 def test_cancel_mid_stream(client, mock_llm):
     """Sending 'cancel' during generation eventually yields a 'cancelled' message."""
@@ -159,6 +166,7 @@ def test_cancel_mid_stream(client, mock_llm):
 
 
 # ── Test: cancelled event resets for next utterance ──────────────────────────────
+
 
 def test_cancel_resets_for_next_utterance(client, mock_llm):
     """After a cancel, the cancelled event is cleared so subsequent audio works normally."""

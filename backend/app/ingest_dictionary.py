@@ -14,7 +14,8 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from app.models import DictionaryEntry
 
 DATABASE_URL = os.environ.get(
-    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei")
+    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei"
+)
 JMDICT_URL = "https://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz"
 BATCH_SIZE = 1000
 
@@ -87,16 +88,10 @@ def ingest(file_path: str):
                 for sense_elem in elem.findall("sense"):
                     glosses = [g.text for g in sense_elem.findall("gloss") if g.text]
                     pos_list = [clean_pos(p.text) for p in sense_elem.findall("pos") if p.text]
-                    senses.append({
-                        "glosses": glosses,
-                        "parts_of_speech": pos_list
-                    })
+                    senses.append({"glosses": glosses, "parts_of_speech": pos_list})
 
                 entry = DictionaryEntry(
-                    sequence_number=seq,
-                    kanji=kanji_list,
-                    reading=reading_list,
-                    senses=senses
+                    sequence_number=seq, kanji=kanji_list, reading=reading_list, senses=senses
                 )
                 batch.append(entry)
 

@@ -4,7 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base, Session, SessionSummary, Document
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei")
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei"
+)
+
 
 @pytest.fixture(scope="module")
 def db_engine():
@@ -14,6 +17,7 @@ def db_engine():
     yield engine
     # Clean up
     Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture(scope="function")
 def db_session(db_engine):
@@ -27,6 +31,7 @@ def db_session(db_engine):
     session.close()
     transaction.rollback()
     connection.close()
+
 
 def test_crud_session(db_session):
     # Create
@@ -44,7 +49,7 @@ def test_crud_session(db_session):
     # Update
     fetched.title = "Updated Lesson"
     db_session.commit()
-    
+
     updated = db_session.query(Session).filter(Session.id == new_session.id).first()
     assert updated.title == "Updated Lesson"
 
@@ -54,6 +59,7 @@ def test_crud_session(db_session):
 
     deleted = db_session.query(Session).filter(Session.id == new_session.id).first()
     assert deleted is None
+
 
 def test_session_summary_cascade(db_session):
     # Create session
@@ -65,7 +71,7 @@ def test_session_summary_cascade(db_session):
     summary_data = {
         "topics": ["Grammar ~te form", "Vocabulary"],
         "new_vocab": ["琴", "日本語"],
-        "mistakes": ["Incorrect particle usage"]
+        "mistakes": ["Incorrect particle usage"],
     }
     summary = SessionSummary(session_id=new_session.id, summary_data=summary_data)
     db_session.add(summary)
@@ -81,8 +87,11 @@ def test_session_summary_cascade(db_session):
     db_session.delete(new_session)
     db_session.commit()
 
-    deleted_summary = db_session.query(SessionSummary).filter(SessionSummary.id == summary.id).first()
+    deleted_summary = (
+        db_session.query(SessionSummary).filter(SessionSummary.id == summary.id).first()
+    )
     assert deleted_summary is None
+
 
 def test_document_crud(db_session):
     # Create

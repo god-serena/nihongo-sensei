@@ -85,7 +85,8 @@ class LLMClient:
                         logger.error(
                             f"OpenAI completion failed: "
                             f"{response.status_code} - "
-                            f"{error_text.decode('utf-8', errors='ignore')}")
+                            f"{error_text.decode('utf-8', errors='ignore')}"
+                        )
                         raise RuntimeError(f"OpenAI API error: {response.status_code}")
 
                     async for line in response.aiter_lines():
@@ -121,30 +122,22 @@ class LLMClient:
             role = msg.get("role")
             content = msg.get("content", "")
             if role == "system":
-                system_instruction = {
-                    "parts": [{"text": content}]
-                }
+                system_instruction = {"parts": [{"text": content}]}
             else:
                 gemini_role = "model" if role in ("assistant", "model") else "user"
-                contents.append({
-                    "role": gemini_role,
-                    "parts": [{"text": content}]
-                })
+                contents.append({"role": gemini_role, "parts": [{"text": content}]})
 
         payload = {
             "contents": contents,
             "generationConfig": {
                 "temperature": temperature,
-            }
+            },
         }
         if system_instruction:
             payload["systemInstruction"] = system_instruction
 
         base = "https://generativelanguage.googleapis.com/v1beta"
-        url = (
-            f"{base}/models/{self.model}:streamGenerateContent"
-            f"?alt=sse&key={self.api_key}"
-        )
+        url = f"{base}/models/{self.model}:streamGenerateContent?alt=sse&key={self.api_key}"
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
@@ -154,7 +147,8 @@ class LLMClient:
                         logger.error(
                             f"Gemini generation failed: "
                             f"{response.status_code} - "
-                            f"{error_text.decode('utf-8', errors='ignore')}")
+                            f"{error_text.decode('utf-8', errors='ignore')}"
+                        )
                         raise RuntimeError(f"Gemini API error: {response.status_code}")
 
                     async for line in response.aiter_lines():

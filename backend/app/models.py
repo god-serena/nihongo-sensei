@@ -14,11 +14,16 @@ class Session(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
-                        onupdate=datetime.datetime.utcnow, nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.utcnow,
+        nullable=False,
+    )
 
-    summaries = relationship("SessionSummary", back_populates="session",
-                             cascade="all, delete-orphan")
+    summaries = relationship(
+        "SessionSummary", back_populates="session", cascade="all, delete-orphan"
+    )
 
 
 class SessionSummary(Base):

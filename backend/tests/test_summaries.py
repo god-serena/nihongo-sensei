@@ -56,9 +56,7 @@ def test_summary_parse_error_on_missing_keys():
 def test_empty_transcript_produces_valid_empty_summary():
     """Test that an empty transcript produces a valid but empty summary."""
     mock_llm = MagicMock()
-    mock_llm.generate_response.return_value = (
-        '{"topics": [], "new_vocabulary": [], "mistakes": []}'
-    )
+    mock_llm.generate_response.return_value = '{"topics": [], "new_vocabulary": [], "mistakes": []}'
 
     messages: list[dict] = []
 

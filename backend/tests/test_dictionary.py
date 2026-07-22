@@ -7,7 +7,9 @@ from app.models import Base
 from app.ingest_dictionary import ingest
 from app.dictionaries.jmdict import JMdictProvider
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei")
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei"
+)
 
 MOCK_JMDICT_XML = """<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE JMdict SYSTEM "JMdict.dtd" [
@@ -43,6 +45,7 @@ MOCK_JMDICT_XML = """<?xml version="1.0" encoding="utf-8"?>
 </JMdict>
 """
 
+
 @pytest.fixture(scope="module")
 def db_engine():
     engine = create_engine(DATABASE_URL)
@@ -51,6 +54,7 @@ def db_engine():
     yield engine
     # Clean up tables
     Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture(scope="function")
 def db_session(db_engine):
@@ -64,6 +68,7 @@ def db_session(db_engine):
     session.close()
     transaction.rollback()
     connection.close()
+
 
 def test_dictionary_ingestion_and_lookup(db_session):
     # Ingest the mock XML data into the test database
@@ -94,7 +99,9 @@ def test_dictionary_ingestion_and_lookup(db_session):
         assert len(res_reading["entries"]) == 1
         assert res_reading["entries"][0]["sequence_number"] == "1000002"
         assert "琴" in res_reading["entries"][0]["kanji"]
-        assert res_reading["entries"][0]["senses"][0]["glosses"] == ["koto (13-stringed Japanese zither)"]
+        assert res_reading["entries"][0]["senses"][0]["glosses"] == [
+            "koto (13-stringed Japanese zither)"
+        ]
         assert "n" in res_reading["entries"][0]["senses"][0]["parts_of_speech"]
 
         # Test lookup with no match

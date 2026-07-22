@@ -9,6 +9,7 @@ from app.database import get_db
 
 # ── Fixtures ───────────────────────────────────────────────────────────────────
 
+
 @pytest.fixture()
 def client():
     """Return a TestClient that does NOT re-raise server-side exceptions."""
@@ -19,10 +20,12 @@ def client():
 def mock_db_session():
     """A MagicMock that satisfies the SQLAlchemy Session interface."""
     session = MagicMock()
+
     # Make refresh() assign an id to the object passed in
     def _refresh(obj):
         if not hasattr(obj, "id") or obj.id is None:
             obj.id = 1
+
     session.refresh.side_effect = _refresh
     return session
 
@@ -37,6 +40,7 @@ def override_db(mock_db_session):
 
 # ── GET /api/health ────────────────────────────────────────────────────────────
 
+
 def test_health_check(client):
     """GET /api/health returns 200 with the expected status JSON."""
     response = client.get("/api/health")
@@ -47,6 +51,7 @@ def test_health_check(client):
 
 
 # ── POST /api/chat ─────────────────────────────────────────────────────────────
+
 
 def test_chat_streaming(client):
     """POST /api/chat streams SSE tokens back from the LLM."""
@@ -98,13 +103,15 @@ def test_chat_unsupported_provider(client):
 
 # ── POST /api/rag/upload ───────────────────────────────────────────────────────
 
+
 def test_rag_upload(client, override_db):
     """POST /api/rag/upload chunks, embeds and stores a document."""
-    with patch("app.routers.rag.load_document", return_value="Hello world"), \
-         patch("app.routers.rag.RecursiveCharacterTextSplitter") as MockSplitter, \
-         patch("app.routers.rag.EmbeddingGenerator") as MockGen, \
-         patch("app.rag.store_document_chunks"):
-
+    with (
+        patch("app.routers.rag.load_document", return_value="Hello world"),
+        patch("app.routers.rag.RecursiveCharacterTextSplitter") as MockSplitter,
+        patch("app.routers.rag.EmbeddingGenerator") as MockGen,
+        patch("app.rag.store_document_chunks"),
+    ):
         mock_splitter = MagicMock()
         mock_splitter.split_text.return_value = ["chunk1", "chunk2"]
         MockSplitter.return_value = mock_splitter
@@ -136,6 +143,7 @@ def test_rag_upload_unsupported_type(client):
 
 
 # ── POST /api/summaries ────────────────────────────────────────────────────────
+
 
 def test_summaries_create(client, override_db):
     """POST /api/summaries generates and persists a structured summary."""

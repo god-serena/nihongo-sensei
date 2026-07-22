@@ -1,0 +1,28 @@
+# Ruff configuration for KotoSensei backend
+# Replaces .flake8 with equivalent settings
+
+line-length = 100
+target-version = "py312"
+
+[lint]
+# Rules to ignore (mirrors .flake8 ignore list)
+# E203: whitespace before ':' — PEP8 conflict with slicing
+# W503: line break before binary operator — conventional style
+# E741: ambiguous variable name — conventional in science/engineering
+# E266: too many leading '#' for block comment
+# E402: module level import not at top — common in test files
+ignore = [
+    "E203",
+    "E741",
+    "E266",
+    "E402",
+]
+
+# Per-file ignores
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
