@@ -5,10 +5,12 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
+
 class LLMClient:
     """
     Unified LLM Client supporting OpenAI-compatible endpoints and native Gemini API.
     """
+
     def __init__(
         self,
         provider: str,  # "openai" or "gemini"
@@ -46,7 +48,11 @@ class LLMClient:
             chunks.append(chunk)
         return "".join(chunks)
 
-    async def generate_stream(self, messages: list[dict], temperature: float = 0.7) -> AsyncIterator[str]:
+    async def generate_stream(
+        self,
+        messages: list[dict],
+        temperature: float = 0.7,
+    ) -> AsyncIterator[str]:
         """
         Generate a streaming response, yielding tokens as they arrive.
         """
@@ -76,7 +82,10 @@ class LLMClient:
                 async with client.stream("POST", url, headers=headers, json=payload) as response:
                     if response.status_code != 200:
                         error_text = await response.aread()
-                        logger.error(f"OpenAI completion failed: {response.status_code} - {error_text.decode('utf-8', errors='ignore')}")
+                        logger.error(
+                            f"OpenAI completion failed: "
+                            f"{response.status_code} - "
+                            f"{error_text.decode('utf-8', errors='ignore')}")
                         raise RuntimeError(f"OpenAI API error: {response.status_code}")
 
                     async for line in response.aiter_lines():
@@ -131,14 +140,21 @@ class LLMClient:
         if system_instruction:
             payload["systemInstruction"] = system_instruction
 
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:streamGenerateContent?alt=sse&key={self.api_key}"
+        base = "https://generativelanguage.googleapis.com/v1beta"
+        url = (
+            f"{base}/models/{self.model}:streamGenerateContent"
+            f"?alt=sse&key={self.api_key}"
+        )
 
         async with httpx.AsyncClient(timeout=self.timeout) as client:
             try:
                 async with client.stream("POST", url, json=payload) as response:
                     if response.status_code != 200:
                         error_text = await response.aread()
-                        logger.error(f"Gemini generation failed: {response.status_code} - {error_text.decode('utf-8', errors='ignore')}")
+                        logger.error(
+                            f"Gemini generation failed: "
+                            f"{response.status_code} - "
+                            f"{error_text.decode('utf-8', errors='ignore')}")
                         raise RuntimeError(f"Gemini API error: {response.status_code}")
 
                     async for line in response.aiter_lines():

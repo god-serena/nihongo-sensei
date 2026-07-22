@@ -15,7 +15,12 @@ class WhisperTranscriber:
     All transcription is performed on CPU (no GPU required).
     """
 
-    def __init__(self, model_size: str = "base", device: str = "cpu", compute_type: str = "int8") -> None:
+    def __init__(
+        self,
+        model_size: str = "base",
+        device: str = "cpu",
+        compute_type: str = "int8",
+    ) -> None:
         self._model_size = model_size
         self._device = device
         self._compute_type = compute_type

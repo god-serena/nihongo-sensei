@@ -1,12 +1,13 @@
-import pytest
 from unittest.mock import MagicMock, patch
 import numpy as np
 from app.embeddings import EmbeddingGenerator
 
+
 def test_embedding_generator_init():
     with patch("app.embeddings.SentenceTransformer") as mock_st:
-        generator = EmbeddingGenerator(model_name="test-model")
+        EmbeddingGenerator(model_name="test-model")
         mock_st.assert_called_once_with("test-model")
+
 
 def test_generate_embeddings():
     with patch("app.embeddings.SentenceTransformer") as mock_st:
@@ -24,8 +25,9 @@ def test_generate_embeddings():
         assert embeddings == [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]
         mock_model.encode.assert_called_once_with(texts)
 
+
 def test_generate_embeddings_empty():
-    with patch("app.embeddings.SentenceTransformer") as mock_st:
+    with patch("app.embeddings.SentenceTransformer"):
         generator = EmbeddingGenerator()
         assert generator.generate_embeddings([]) == []
 

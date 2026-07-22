@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.rag import load_document, RecursiveCharacterTextSplitter
 from app.embeddings import EmbeddingGenerator
-from app.models import Document, DocumentChunk
+from app.models import Document
 
 
 router = APIRouter()
@@ -18,9 +18,9 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
     """Accept a file upload (.txt, .md, .pdf), chunk it, embed it, and store in the DB."""
     # Save uploaded file to temp location
     with tempfile.NamedTemporaryFile(delete=False, suffix=file.filename) as tmp:
-            content = await file.read()
-            tmp.write(content)
-            tmp_path = tmp.name
+        content = await file.read()
+        tmp.write(content)
+        tmp_path = tmp.name
 
     # Load document text
     text = load_document(tmp_path)

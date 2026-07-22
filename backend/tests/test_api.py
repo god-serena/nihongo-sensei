@@ -1,6 +1,5 @@
 """Integration tests for FastAPI endpoints using httpx TestClient."""
 
-import io
 import pytest
 from unittest.mock import MagicMock, patch
 from starlette.testclient import TestClient

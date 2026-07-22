@@ -1,7 +1,7 @@
-import { describe, test } from 'vitest'
+import { describe, test } from "vitest";
 
-describe('Setup', () => {
-  test('Vitest is working', () => {
-    expect(true).toBe(true)
-  })
-})
+describe("Setup", () => {
+    test("Vitest is working", () => {
+        expect(true).toBe(true);
+    });
+});

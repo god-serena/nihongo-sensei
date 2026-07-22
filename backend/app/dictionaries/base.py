@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class DictionaryProvider(ABC):
     @abstractmethod
     def lookup(self, term: str) -> dict:

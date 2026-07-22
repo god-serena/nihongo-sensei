@@ -2,8 +2,6 @@
 
 import pytest
 from unittest.mock import MagicMock, patch, PropertyMock
-
-import pytest
 from pathlib import Path
 
 from app.tts_stt import WhisperTranscriber, TTSGenerator

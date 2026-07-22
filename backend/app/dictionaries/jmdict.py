@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.dictionaries.base import DictionaryProvider
 from app.models import DictionaryEntry
 
+
 class JMdictProvider(DictionaryProvider):
     def __init__(self, db: Session):
         self.db = db
@@ -25,8 +26,8 @@ class JMdictProvider(DictionaryProvider):
         """
         # Search for term in the kanji or reading JSONB lists
         entries = self.db.query(DictionaryEntry).filter(
-            (DictionaryEntry.kanji.contains([term])) |
-            (DictionaryEntry.reading.contains([term]))
+            (DictionaryEntry.kanji.contains([term]))
+            | (DictionaryEntry.reading.contains([term]))
         ).all()
 
         return {

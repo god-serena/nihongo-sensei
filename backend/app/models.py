@@ -7,15 +7,19 @@ from pgvector.sqlalchemy import Vector
 
 Base = declarative_base()
 
+
 class Session(Base):
     __tablename__ = "sessions"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.datetime.utcnow,
+                        onupdate=datetime.datetime.utcnow, nullable=False)
 
-    summaries = relationship("SessionSummary", back_populates="session", cascade="all, delete-orphan")
+    summaries = relationship("SessionSummary", back_populates="session",
+                             cascade="all, delete-orphan")
+
 
 class SessionSummary(Base):
     __tablename__ = "session_summaries"
@@ -27,6 +31,7 @@ class SessionSummary(Base):
 
     session = relationship("Session", back_populates="summaries")
 
+
 class Document(Base):
     __tablename__ = "documents"
 
@@ -36,6 +41,7 @@ class Document(Base):
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
 
     chunks = relationship("DocumentChunk", back_populates="document", cascade="all, delete-orphan")
+
 
 class DocumentChunk(Base):
     __tablename__ = "document_chunks"
@@ -56,6 +62,7 @@ class DictionaryEntry(Base):
     kanji = Column(JSONB, nullable=False, default=list)
     reading = Column(JSONB, nullable=False, default=list)
     senses = Column(JSONB, nullable=False, default=list)
+
 
 # Add GIN indexes for fast lookup on JSONB lists
 Index("ix_dictionary_entries_kanji_gin", DictionaryEntry.kanji, postgresql_using="gin")

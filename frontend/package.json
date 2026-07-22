@@ -18,8 +18,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/test-utils": "^2.4.11",
     "autoprefixer": "^10.5.4",
+    "eslint": "^10.7.0",
     "jsdom": "^29.1.1",
     "postcss": "^8.5.22",
     "tailwindcss": "^4.3.3",

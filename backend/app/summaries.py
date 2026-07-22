@@ -2,7 +2,7 @@
 
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,9 @@ class SummaryParseError(Exception):
 
 
 _SYSTEM_PROMPT = (
-    "You are a Japanese language lesson analyst. Analyze the conversation transcript and produce a structured JSON summary.\n"
+    "You are a Japanese language lesson analyst. "
+    "Analyze the conversation transcript and "
+    "produce a structured JSON summary.\n"
     "Respond ONLY with valid JSON — no markdown fences, no extra text.\n"
     "Use this exact schema:\n"
     '{"topics": ["list of lesson topics covered"], '

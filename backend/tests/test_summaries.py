@@ -1,7 +1,7 @@
 """Tests for session summary generation."""
 
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from app.summaries import generate_summary, SummaryParseError
 
 

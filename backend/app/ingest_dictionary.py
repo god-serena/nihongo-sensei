@@ -11,16 +11,19 @@ from sqlalchemy.orm import sessionmaker
 # Ensure backend root is in PYTHONPATH
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from app.models import Base, DictionaryEntry
+from app.models import DictionaryEntry
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei")
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/kotosensei")
 JMDICT_URL = "https://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz"
 BATCH_SIZE = 1000
+
 
 def download_jmdict(dest_path: str):
     print(f"Downloading JMdict from {JMDICT_URL}...")
     urllib.request.urlretrieve(JMDICT_URL, dest_path)
     print("Download complete.")
+
 
 def pre_process_xml(input_path: str, output_file):
     print("Preprocessing XML to handle custom entities...")
@@ -41,16 +44,18 @@ def pre_process_xml(input_path: str, output_file):
             output_file.write(processed_line.encode("utf-8"))
     finally:
         infile.close()
-    
+
     output_file.flush()
     output_file.seek(0)
     print("Preprocessing complete.")
+
 
 def clean_pos(pos_text: str) -> str:
     # Remove leading/trailing & and ; from processed entities
     if pos_text.startswith("&") and pos_text.endswith(";"):
         return pos_text[1:-1]
     return pos_text
+
 
 def ingest(file_path: str):
     # Setup DB
@@ -61,12 +66,12 @@ def ingest(file_path: str):
     # Preprocess file
     with tempfile.NamedTemporaryFile(suffix=".xml") as temp_xml:
         pre_process_xml(file_path, temp_xml)
-        
+
         print("Parsing XML and inserting into DB...")
         context = ET.iterparse(temp_xml.name, events=("start", "end"))
         context = iter(context)
-        event, root = next(context) # get root element
-        
+        event, root = next(context)  # get root element
+
         batch = []
         count = 0
 
@@ -74,10 +79,10 @@ def ingest(file_path: str):
             if event == "end" and elem.tag == "entry":
                 # Parse entry
                 seq = elem.findtext("ent_seq")
-                
+
                 kanji_list = [k.text for k in elem.findall(".//k_ele/keb") if k.text]
                 reading_list = [r.text for r in elem.findall(".//r_ele/reb") if r.text]
-                
+
                 senses = []
                 for sense_elem in elem.findall("sense"):
                     glosses = [g.text for g in sense_elem.findall("gloss") if g.text]
@@ -86,7 +91,7 @@ def ingest(file_path: str):
                         "glosses": glosses,
                         "parts_of_speech": pos_list
                     })
-                
+
                 entry = DictionaryEntry(
                     sequence_number=seq,
                     kanji=kanji_list,
@@ -94,18 +99,18 @@ def ingest(file_path: str):
                     senses=senses
                 )
                 batch.append(entry)
-                
+
                 if len(batch) >= BATCH_SIZE:
                     db.bulk_save_objects(batch)
                     db.commit()
                     count += len(batch)
                     print(f"Ingested {count} entries...")
                     batch = []
-                
+
                 # Clear elements to save memory
                 elem.clear()
                 root.clear()
-        
+
         if batch:
             db.bulk_save_objects(batch)
             db.commit()
@@ -115,11 +120,12 @@ def ingest(file_path: str):
     db.close()
     print(f"Finished ingesting {count} entries successfully.")
 
+
 if __name__ == "__main__":
     target_path = None
     if len(sys.argv) > 1:
         target_path = sys.argv[1]
-    
+
     if not target_path:
         # If no path specified, check for local file first, otherwise download
         local_gz = "JMdict_e.gz"
@@ -129,5 +135,5 @@ if __name__ == "__main__":
         else:
             print(f"Found local file: {local_gz}")
             target_path = local_gz
-            
+
     ingest(target_path)

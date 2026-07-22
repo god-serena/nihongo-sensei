@@ -1,0 +1,35 @@
+[flake8]
+# Enforce 4-space indentation
+indent-width = 4
+
+# Tabs: allow tabs for alignment (conventional), but not mixed with spaces
+# Note: flake8 doesn't have a direct "allow tabs" option
+# We use --extend-ignore for known conventions
+
+# Line length
+max-line-length = 100
+
+# Quotes: prefer double quotes (conventional)
+# flake8 doesn't enforce quotes; use pycodestyle E501 for line length
+
+# Ignore:
+# E203: whitespace before ':' (PEP8 conflict with slicing)
+# W503: line break before binary operator (conventional)
+# E741: ambiguous variable name (conventional in science/engineering)
+# E266: too many leading '#' for block comment
+# E402: module level import not at top (common in test files)
+ignore = E203, W503, E741, E266, E402
+
+# Exclude: virtualenv, migrations
+exclude =
+    .venv,
+    venv,
+    __pycache__,
+    .git,
+    migrations,
+    .eggs,
+    *.egg
+
+# Per-file ignores
+per-file-ignores =
+    __init__.py: F401
