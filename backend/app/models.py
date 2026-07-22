@@ -2,6 +2,8 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON, Index
 from sqlalchemy.orm import relationship, declarative_base
 from sqlalchemy.dialects.postgresql import JSONB
+from pgvector.sqlalchemy import Vector
+
 
 Base = declarative_base()
 
@@ -32,6 +34,19 @@ class Document(Base):
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    chunks = relationship("DocumentChunk", back_populates="document", cascade="all, delete-orphan")
+
+class DocumentChunk(Base):
+    __tablename__ = "document_chunks"
+
+    id = Column(Integer, primary_key=True, index=True)
+    document_id = Column(Integer, ForeignKey("documents.id", ondelete="CASCADE"), nullable=False)
+    content = Column(Text, nullable=False)
+    embedding = Column(Vector(384), nullable=False)
+
+    document = relationship("Document", back_populates="chunks")
+
 
 class DictionaryEntry(Base):
     __tablename__ = "dictionary_entries"

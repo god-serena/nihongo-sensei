@@ -110,3 +110,33 @@ class RecursiveCharacterTextSplitter:
             chunks.append(separator.join(current_chunk))
 
         return chunks
+
+
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+from app.models import DocumentChunk
+
+def store_document_chunks(db: Session, document_id: int, chunks: list[str], embeddings: list[list[float]]) -> None:
+    """
+    Store document chunks with their vector embeddings in PostgreSQL.
+    """
+    for chunk, embedding in zip(chunks, embeddings):
+        db_chunk = DocumentChunk(
+            document_id=document_id,
+            content=chunk,
+            embedding=embedding
+        )
+        db.add(db_chunk)
+    db.commit()
+
+def query_similar_chunks(db: Session, query_embedding: list[float], limit: int = 5) -> list[DocumentChunk]:
+    """
+    Retrieve document chunks ordered by similarity (distance) to the query embedding.
+    """
+    stmt = (
+        select(DocumentChunk)
+        .order_by(DocumentChunk.embedding.cosine_distance(query_embedding))
+        .limit(limit)
+    )
+    return list(db.scalars(stmt).all())
+
