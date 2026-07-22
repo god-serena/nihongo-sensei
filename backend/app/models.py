@@ -1,6 +1,7 @@
 import datetime
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Text, JSON, Index
 from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.dialects.postgresql import JSONB
 
 Base = declarative_base()
 
@@ -31,3 +32,16 @@ class Document(Base):
     title = Column(String(255), nullable=False)
     content = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+class DictionaryEntry(Base):
+    __tablename__ = "dictionary_entries"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sequence_number = Column(String(50), nullable=True)
+    kanji = Column(JSONB, nullable=False, default=list)
+    reading = Column(JSONB, nullable=False, default=list)
+    senses = Column(JSONB, nullable=False, default=list)
+
+# Add GIN indexes for fast lookup on JSONB lists
+Index("ix_dictionary_entries_kanji_gin", DictionaryEntry.kanji, postgresql_using="gin")
+Index("ix_dictionary_entries_reading_gin", DictionaryEntry.reading, postgresql_using="gin")
