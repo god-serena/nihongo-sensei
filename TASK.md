@@ -53,7 +53,7 @@
 ## Milestone 6: Vue 3 Frontend (Renderer)
 - [x] **6.1 Vue 3 Setup**: Initialize Vue 3 (Composition API) + Vite + Tailwind CSS in `/frontend`.
 - [x] **6.2 Audio Visualizer**: Build `VoiceVisualizer.vue` for real-time mic waveform display.
-- [ ] **6.3 Chat & Controls**: Build `ChatArea.vue` supporting chat history, audio play/pause, and push-to-talk interrupt button.
+- [x] **6.3 Chat & Controls**: Build `ChatArea.vue` supporting chat history, audio play/pause, and push-to-talk interrupt button.
 - [ ] **6.4 RAG & Summary Dashboard**: Build `DocumentManager.vue` and `SessionSummaries.vue`.
 - [ ] **6.5 Frontend Unit Tests**: Set up Vitest and write component tests for UI components and WebSocket state handling.
 
