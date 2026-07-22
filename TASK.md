@@ -14,7 +14,7 @@
 - [x] **1.2 Python Environment**: Create `/backend/requirements.txt` (FastAPI, uvicorn, pytest, sqlalchemy, alembic, psycopg2-binary, pgvector) and set up venv.
 - [x] **1.3 Database Compose**: Create `docker-compose.yml` configured for local PostgreSQL with the `pgvector` extension enabled.
 - [x] **1.4 DB Models**: Write SQLAlchemy models in `backend/app/models.py` for `Session`, `SessionSummary`, and `Document`. Initialize Alembic (`alembic init`) and generate/apply the initial migration for these tables.
-- [ ] **1.5 DB Connection Test**: Write a pytest in `backend/tests/test_db.py` to verify PostgreSQL connection, table creation, and CRUD.
+- [x] **1.5 DB Connection Test**: Write a pytest in `backend/tests/test_db.py` to verify PostgreSQL connection, table creation, and CRUD.
 
 ---
 
