@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+backend/data/
+
+# Node / Electron
+node_modules/
+dist/
+out/
+
+# Local Environment & Database
+.env
+*.db
+*.sqlite
+.pi
+plans

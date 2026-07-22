@@ -16,5 +16,8 @@ pytest-cov==4.1.0
 pypdf==4.2.0
 sentence-transformers==3.0.1
 
+# Audio / Speech
+faster-whisper==1.0.3
+
 
 

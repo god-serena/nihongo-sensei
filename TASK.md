@@ -44,7 +44,7 @@
 ---
 
 ## Milestone 5: Audio & Speech Pipeline
-- [ ] **5.1 STT Integration**: Implement local Whisper (`faster-whisper`) transcriber in `backend/app/tts_stt.py`.
+- [x] **5.1 STT Integration**: Implement local Whisper (`faster-whisper`) transcriber in `backend/app/tts_stt.py`.
 - [ ] **5.2 TTS Integration**: Implement VOICEVOX / Edge-TTS audio generator.
 - [ ] **5.3 WebSocket Engine**: Implement `/ws/speech` websocket endpoint supporting real-time audio streaming, token delivery, and immediate `cancel` (barge-in) messages.
 
