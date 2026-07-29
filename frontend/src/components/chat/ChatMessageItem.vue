@@ -56,7 +56,7 @@ async function handleCopy() {
     <!-- Avatar -->
     <div
       :class="[
-        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 font-bold text-xs shadow-sm',
+        'w-8 h-8 rounded-xl flex items-center justify-center shrink-0 font-bold text-xs shadow-sm',
         isSensei(msg)
           ? 'bg-red-600 text-white ring-1 ring-red-400'
           : 'bg-white text-black ring-1 ring-zinc-300 font-sans'
