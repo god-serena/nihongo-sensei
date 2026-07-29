@@ -1,9 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { mount } from "@vue/test-utils";
 import { createPinia } from "pinia";
 import HomeView from "@/views/HomeView.vue";
 
-// Mock API calls made by child components if needed
+// Mock API calls made by child components
 vi.mock("@/services/api", () => ({
     createSpeechWebSocket: vi.fn(() => ({
         readyState: 1,
@@ -37,6 +37,11 @@ describe("HomeView.vue", () => {
                     SessionSummaries: {
                         template: "<div class='stub-session-summaries'>SessionSummaries Stub</div>",
                     },
+                    FlashcardsView: { template: "<div class='stub-flashcards'>Flashcards Stub</div>" },
+                    DictionaryView: { template: "<div class='stub-dictionary'>Dictionary Stub</div>" },
+                    GrammarAnalyzer: { template: "<div class='stub-analyzer'>Analyzer Stub</div>" },
+                    ListeningLab: { template: "<div class='stub-listening'>Listening Stub</div>" },
+                    StatsProgress: { template: "<div class='stub-stats'>Stats Stub</div>" },
                 },
             },
         });
@@ -45,7 +50,7 @@ describe("HomeView.vue", () => {
     it("renders branding header and title", () => {
         const wrapper = mountComponent();
         expect(wrapper.text()).toContain("琴先生");
-        expect(wrapper.text()).toContain("KotoSensei");
+        expect(wrapper.text()).toContain("Koto Sensei");
     });
 
     it("renders ChatArea in the main workspace section", () => {
@@ -53,34 +58,32 @@ describe("HomeView.vue", () => {
         expect(wrapper.find(".stub-chat-area").exists()).toBe(true);
     });
 
-    it("renders tab toggles for Study Materials and Lesson Summaries", () => {
+    it("renders navigation buttons for switching views", () => {
         const wrapper = mountComponent();
-        const tabs = wrapper.findAll("button");
-        const tabTexts = tabs.map((btn) => btn.text());
-        expect(tabTexts.some((t) => t.includes("Study Materials") || t.includes("Documents"))).toBe(
-            true,
-        );
-        expect(tabTexts.some((t) => t.includes("Summaries") || t.includes("Insights"))).toBe(true);
+        const navButtons = wrapper.findAll("button");
+        const buttonTexts = navButtons.map((btn) => btn.text());
+        expect(buttonTexts.some((t) => t.includes("Study Materials") || t.includes("Documents"))).toBe(true);
+        expect(buttonTexts.some((t) => t.includes("Lesson Insights") || t.includes("Summaries"))).toBe(true);
     });
 
-    it("toggles auxiliary view when tab is clicked", async () => {
+    it("toggles view when navigation tab is clicked", async () => {
         const wrapper = mountComponent();
 
-        // Default tab should show DocumentManager
-        expect(wrapper.find(".stub-doc-manager").exists()).toBe(true);
+        // Default view is chat — ChatArea visible, others hidden
+        expect(wrapper.find(".stub-chat-area").exists()).toBe(true);
         expect(wrapper.find(".stub-session-summaries").exists()).toBe(false);
 
-        // Find the summaries tab button and click it
+        // Find the summaries nav button and click it
         const buttons = wrapper.findAll("button");
         const summariesBtn = buttons.find(
-            (btn) => btn.text().includes("Summaries") || btn.text().includes("Insights"),
+            (btn) => btn.text().includes("Lesson Insights") || btn.text().includes("Summaries"),
         );
         expect(summariesBtn).toBeDefined();
 
         await summariesBtn.trigger("click");
 
-        // Now SessionSummaries should be visible and DocumentManager hidden
+        // Now SessionSummaries should be visible and ChatArea hidden
         expect(wrapper.find(".stub-session-summaries").exists()).toBe(true);
-        expect(wrapper.find(".stub-doc-manager").exists()).toBe(false);
+        expect(wrapper.find(".stub-chat-area").exists()).toBe(false);
     });
 });
