@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 from typing import AsyncIterator, Optional
 import httpx
 
@@ -13,7 +14,7 @@ class LLMClient:
 
     def __init__(
         self,
-        provider: str,  # "openai" or "gemini"
+        provider: str,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
         model: Optional[str] = None,
@@ -25,14 +26,23 @@ class LLMClient:
         self.model = model
         self.timeout = timeout
 
-        if self.provider == "openai":
+        if self.provider in ("openai", "local"):
             # Default to Ollama defaults if base_url is not set
             if not self.base_url:
                 self.base_url = "http://localhost:11434/v1"
             # Strip trailing slash if present
             self.base_url = self.base_url.rstrip("/")
+            # Ensure base_url ends with /v1 for OpenAI-compatible endpoints
+            if not self.base_url.endswith("/v1"):
+                self.base_url = f"{self.base_url}/v1"
+
+            is_dev = os.getenv("IS_DEV", "false").lower() in ("true", "1") or os.path.exists("/.dockerenv")
+            if is_dev and ("localhost" in self.base_url or "127.0.0.1" in self.base_url):
+                self.base_url = self.base_url.replace("localhost", "host.docker.internal").replace("127.0.0.1", "host.docker.internal")
+                logger.info(f"Development environment detected: mapped local LLM base_url to {self.base_url}")
+
             if not self.model:
-                self.model = "llama3"
+                self.model = "llama3.2" if self.provider == "local" else "llama3"
         elif self.provider == "gemini":
             if not self.model:
                 self.model = "gemini-1.5-flash"
@@ -56,7 +66,7 @@ class LLMClient:
         """
         Generate a streaming response, yielding tokens as they arrive.
         """
-        if self.provider == "openai":
+        if self.provider in ("openai", "local"):
             async for chunk in self._stream_openai(messages, temperature):
                 yield chunk
         elif self.provider == "gemini":
@@ -81,13 +91,19 @@ class LLMClient:
             try:
                 async with client.stream("POST", url, headers=headers, json=payload) as response:
                     if response.status_code != 200:
-                        error_text = await response.aread()
+                        raw_bytes = await response.aread()
+                        error_text = raw_bytes.decode('utf-8', errors='ignore')
                         logger.error(
-                            f"OpenAI completion failed: "
-                            f"{response.status_code} - "
-                            f"{error_text.decode('utf-8', errors='ignore')}"
+                            f"OpenAI/Local completion failed ({response.status_code}): {error_text}"
                         )
-                        raise RuntimeError(f"OpenAI API error: {response.status_code}")
+                        err_detail = error_text
+                        try:
+                            err_json = json.loads(error_text)
+                            if isinstance(err_json, dict):
+                                err_detail = err_json.get("error", {}).get("message") or err_json.get("error") or error_text
+                        except Exception:
+                            pass
+                        raise RuntimeError(f"Model error ({response.status_code}): {err_detail}")
 
                     async for line in response.aiter_lines():
                         if not line.strip():
@@ -106,6 +122,12 @@ class LLMClient:
                                         yield content
                             except json.JSONDecodeError:
                                 logger.warning(f"Failed to decode SSE line: {line}")
+            except httpx.ConnectError as e:
+                logger.error(f"Error connecting to LLM server at {self.base_url}: {e}")
+                raise RuntimeError(
+                    f"Could not connect to LLM server at {self.base_url}. "
+                    f"Please check your Settings in KotoSensei and ensure your local LLM (Ollama / LM Studio) or API key is running."
+                ) from e
             except Exception as e:
                 logger.error(f"Error in OpenAI streaming: {e}")
                 raise
