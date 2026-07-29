@@ -40,7 +40,7 @@ const emit = defineEmits<{
 
         <button
           @click="emit('reset-stats')"
-          class="px-3 py-1.5 rounded-lg bg-zinc-950 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+          class="px-3 py-1.5 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-zinc-400 hover:text-red-400 border border-zinc-800 text-xs font-semibold flex items-center gap-1.5 transition-colors"
         >
           <RefreshCcw class="w-3.5 h-3.5" />
           Reset Progress
