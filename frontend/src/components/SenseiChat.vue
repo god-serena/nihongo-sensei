@@ -247,7 +247,7 @@ function handleSaveVocab(word: string) {
 </script>
 
 <template>
-  <div class="flex flex-col h-[calc(100vh-154px)] max-w-5xl mx-auto px-4 w-full py-2 sm:py-4 overflow-hidden">
+  <div class="flex flex-col h-[calc(100vh-193px)] max-w-5xl mx-auto px-4 w-full py-4 overflow-hidden">
     <!-- Top Session Header -->
     <ChatHeader
       :activeSession="activeSession"
@@ -275,7 +275,7 @@ function handleSaveVocab(word: string) {
       <!-- Chat Feed & Input Area -->
       <div class="flex-1 flex flex-col min-w-0">
         <!-- Messages Scroll Container -->
-        <div class="flex-1 min-h-0 overflow-y-auto space-y-4 pr-1 sm:pr-2 py-2">
+        <div class="flex-1 min-h-0 overflow-y-auto space-y-4 p-3">
           <ChatMessageItem
             v-for="msg in messages"
             :key="msg.id"
@@ -287,7 +287,7 @@ function handleSaveVocab(word: string) {
 
           <!-- Loading Spinner Indicator -->
           <div v-if="loading && !streamingMessageId" class="flex gap-3 max-w-md mr-auto">
-            <div class="w-8 h-8 rounded-lg bg-red-600 text-white font-bold text-xs flex items-center justify-center ring-1 ring-red-400">
+            <div class="w-8 h-8 rounded-xl bg-red-600 text-white font-bold text-xs flex items-center justify-center ring-1 ring-red-400">
               琴
             </div>
             <div class="bg-zinc-900 text-zinc-300 border border-zinc-800 rounded-xl p-4 text-xs flex items-center gap-2">
@@ -308,10 +308,10 @@ function handleSaveVocab(word: string) {
         </div>
 
         <!-- Bottom Row: Collapsed sidebar bar (30%) + Chat Input (70%) -->
-        <div class="shrink-0 flex items-center gap-2 w-full top-[703px]">
+        <div class="p-2.5 shrink-0 flex items-center gap-2 w-full top-[703px] bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-m">
           <div
             @click="sidebarOpen = true"
-            class="w-[30%] sm:w-[28%] h-[46px] bg-zinc-900 border border-zinc-800 rounded-xl px-3 flex items-center justify-between gap-2 shadow-lg hover:border-zinc-700 cursor-pointer shrink-0"
+            class="w-[30%] sm:w-[28%] h-[46px] bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 flex items-center justify-between gap-2 shadow-lg hover:border-zinc-700 cursor-pointer shrink-0"
           >
             <div class="flex items-center gap-2 min-w-0">
               <MessageSquare class="w-4 h-4 text-red-500 shrink-0" />
