@@ -59,7 +59,8 @@ describe("ChatArea.vue", () => {
 
     it("renders PTT button", () => {
         const wrapper = mountComponent();
-        expect(wrapper.find("button").text()).toContain("Push-to-Talk");
+        const pttBtn = wrapper.findAll("button").find(b => b.text().includes("Push-to-Talk"));
+        expect(pttBtn).toBeDefined();
     });
 
     it("renders cancel button when isSpeaking is true", async () => {
@@ -68,8 +69,8 @@ describe("ChatArea.vue", () => {
         const audioStore = useAudioStore();
         audioStore.isSpeaking = true;
         await wrapper.vm.$nextTick();
-        expect(wrapper.findAll("button").length).toBe(2);
-        expect(wrapper.findAll("button")[1].text()).toContain("Cancel");
+        const cancelBtn = wrapper.findAll("button").find(b => b.text().includes("Cancel"));
+        expect(cancelBtn).toBeDefined();
     });
 
     it("does not render cancel button when isSpeaking is false", async () => {
@@ -78,7 +79,8 @@ describe("ChatArea.vue", () => {
         const audioStore = useAudioStore();
         audioStore.isSpeaking = false;
         await wrapper.vm.$nextTick();
-        expect(wrapper.findAll("button").length).toBe(1);
+        const cancelBtn = wrapper.findAll("button").find(b => b.text().includes("Cancel"));
+        expect(cancelBtn).toBeUndefined();
     });
 
     it("appends tokens from WebSocket messages", async () => {
@@ -119,8 +121,9 @@ describe("ChatArea.vue", () => {
         const audioStore = useAudioStore();
         audioStore.isSpeaking = true;
         await wrapper.vm.$nextTick();
-        const buttons = wrapper.findAll("button");
-        await buttons[1].trigger("click");
+        const cancelBtn = wrapper.findAll("button").find(b => b.text().includes("Cancel"));
+        expect(cancelBtn).toBeDefined();
+        await cancelBtn.trigger("click");
         expect(_mockWs.send).toHaveBeenCalledWith(JSON.stringify({ type: "cancel" }));
     });
 });
