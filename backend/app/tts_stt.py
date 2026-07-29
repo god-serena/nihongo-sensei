@@ -47,10 +47,10 @@ class WhisperTranscriber:
         Returns:
             The concatenated text from all recognised segments.
         """
-        segments = self.model.transcribe(audio_path)
+        segments, info = self.model.transcribe(audio_path)
         return " ".join(segment.text for segment in segments if segment.text)
 
-    def transcribe_bytes(self, audio_bytes: bytes, suffix: str = ".wav") -> str:
+    def transcribe_bytes(self, audio_bytes: bytes, suffix: str = ".webm") -> str:
         """Transcribe raw audio bytes by writing them to a temporary file.
 
         Args:
@@ -88,24 +88,8 @@ class TTSGenerator:
         self._volume = volume
 
     async def synthesize(self, text: str) -> bytes:
-        """Synthesise speech for *text* and return raw MP3 bytes.
-
-        Args:
-            text: The text to convert to speech.
-
-        Returns:
-            Raw MP3 audio bytes.
-        """
-        communicate = edge_tts.Communicate(
-            text,
-            self._voice,
-        )
-        # Build a byte buffer from the streaming chunks.
-        audio_io = io.BytesIO()
-        async for chunk in communicate.stream():
-            if isinstance(chunk, bytes):
-                audio_io.write(chunk)
-        return audio_io.getvalue()
+        """TTS disabled per user directive — returns empty bytes instantly."""
+        return b""
 
     async def synthesize_to_file(self, text: str, output_path: str) -> None:
         """Synthesise speech and save it to a file.
