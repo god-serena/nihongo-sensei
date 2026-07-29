@@ -1,120 +1,218 @@
 <template>
-    <div class="flex flex-col h-screen bg-slate-950 text-slate-100 font-sans overflow-hidden">
-        <!-- Top Navigation / Header -->
-        <header
-            class="flex items-center justify-between px-6 py-3 bg-slate-900/90 border-b border-slate-800 backdrop-blur-md shrink-0 shadow-lg"
-        >
-            <div class="flex items-center space-x-3">
-                <div
-                    class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center font-bold text-white shadow-md shadow-indigo-500/20"
-                >
-                    琴
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                        <span>琴先生</span>
-                        <span class="text-xs text-indigo-400 font-normal">KotoSensei</span>
-                    </h1>
-                    <p class="text-xs text-slate-400">Local Japanese AI Voice Tutor</p>
-                </div>
-            </div>
+  <div class="h-screen bg-zinc-950 text-zinc-100 flex flex-col font-sans selection:bg-red-600 selection:text-white overflow-hidden">
 
-            <!-- Status Indicator -->
-            <div class="flex items-center gap-3">
-                <div
-                    class="flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/80 border border-slate-700/60 text-xs"
-                >
-                    <span class="relative flex h-2 w-2">
-                        <span
-                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-                        ></span>
-                        <span
-                            class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
-                        ></span>
-                    </span>
-                    <span class="text-slate-300 font-medium">Ready</span>
-                </div>
-            </div>
-        </header>
+    <!-- Header (with embedded tab navigation) -->
+    <Header
+      :currentJlpt="currentJlpt"
+      :stats="userStats"
+      :hasApiServer="hasApiServer"
+      :activeTab="activeTab"
+      @update:jlpt="(lvl) => currentJlpt = lvl"
+      @update:tab="(tab) => activeTab = tab"
+      @open-settings="settingsModalOpen = true"
+    />
 
-        <!-- Main Body: Two-Column Workspace Layout -->
-        <main class="flex-1 flex overflow-hidden p-4 gap-4 bg-slate-950">
-            <!-- Left Workspace: Interactive Chat & Voice Tutor -->
-            <section
-                class="flex-1 flex flex-col min-w-0 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl"
-            >
-                <ChatArea class="flex-1 h-full" />
-            </section>
+    <!-- Main Workspace Container (scrollable) -->
+    <main class="flex-1 overflow-y-auto">
+      
+      <!-- Chat Tab -->
+      <SenseiChat
+        v-if="activeTab === 'chat'"
+        :messages="chatMessages"
+        :currentJlpt="currentJlpt"
+        :savedVocabIds="userStats.savedVocabIds"
+        @update:messages="(msgs) => chatMessages = msgs"
+        @save-vocab="toggleSavedVocab"
+        @clear-messages="chatMessages = []"
+      />
 
-            <!-- Right Workspace: Sidebar Inspector (Documents & Summaries) -->
-            <aside
-                class="w-[380px] lg:w-[440px] flex flex-col shrink-0 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl"
-            >
-                <!-- Tab Controls -->
-                <div class="flex border-b border-slate-800 bg-slate-900/50 p-1.5 gap-1.5 shrink-0">
-                    <button
-                        @click="activeTab = 'documents'"
-                        :class="[
-                            'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold transition-all duration-200',
-                            activeTab === 'documents'
-                                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60',
-                        ]"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M12 6207.293 7.293 1.414 1.414 0 011.414 0L15 6.414 21 12 15z"
-                            />
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                            />
-                        </svg>
-                        Study Materials
-                    </button>
-                    <button
-                        @click="activeTab = 'summaries'"
-                        :class="[
-                            'flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-semibold transition-all duration-200',
-                            activeTab === 'summaries'
-                                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/60',
-                        ]"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-                            />
-                        </svg>
-                        Lesson Insights
-                    </button>
-                </div>
+      <!-- Flashcards Tab -->
+      <FlashcardsView
+        v-else-if="activeTab === 'flashcards'"
+        :currentJlpt="currentJlpt"
+        :masteredIds="masteredFlashcardIds"
+        @toggle-mastered="toggleMastered"
+      />
 
-                <!-- Tab Content Panel -->
-                <div class="flex-1 overflow-y-auto p-4 text-slate-800">
-                    <DocumentManager v-if="activeTab === 'documents'" />
-                    <SessionSummaries v-else-if="activeTab === 'summaries'" />
-                </div>
-            </aside>
-        </main>
-    </div>
+      <!-- Dictionary Tab -->
+      <DictionaryView
+        v-else-if="activeTab === 'dictionary'"
+        :savedVocabIds="userStats.savedVocabIds"
+        @toggle-saved-vocab="toggleSavedVocab"
+      />
+
+      <!-- Listening Lab Tab -->
+      <ListeningLab
+        v-else-if="activeTab === 'listening'"
+        :currentJlpt="currentJlpt"
+        @listening-complete="handleListeningComplete"
+      />
+
+      <!-- Stats & Progress Tab -->
+      <StatsProgress
+        v-else-if="activeTab === 'stats'"
+        :stats="userStats"
+        @reset-stats="handleResetStats"
+      />
+
+      <!-- RAG Study Materials Tab -->
+      <div v-else-if="activeTab === 'documents'" class="max-w-5xl mx-auto p-4">
+        <DocumentManager />
+      </div>
+
+      <!-- Lesson Summaries Insights Tab -->
+      <div v-else-if="activeTab === 'summaries'" class="max-w-5xl mx-auto p-4">
+        <SessionSummaries />
+      </div>
+
+    </main>
+
+    <!-- Settings Modal -->
+    <SettingsModal
+      :open="settingsModalOpen"
+      @close="settingsModalOpen = false"
+    />
+
+    <!-- Footer Stamp -->
+    <footer class="border-t border-zinc-900 bg-zinc-950 py-4 text-center text-xs text-zinc-500 font-sans">
+      <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+          <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span>
+          <span class="font-bold text-zinc-400">Koto Sensei Japanese Studio</span>
+          <span class="text-zinc-600">• Vue 3 + Tailwind CSS + FastAPI Engine</span>
+        </div>
+        <p class="text-zinc-600 font-serif">
+          "継続は力なり" — Continuation is power.
+        </p>
+      </div>
+    </footer>
+
+  </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import ChatArea from "@/components/ChatArea.vue";
-import DocumentManager from "@/components/DocumentManager.vue";
-import SessionSummaries from "@/components/SessionSummaries.vue";
+import { ref, onMounted, watch } from 'vue';
+import Header from '../components/Header.vue';
+import SenseiChat from '../components/SenseiChat.vue';
+import FlashcardsView from '../components/FlashcardsView.vue';
+import DictionaryView from '../components/DictionaryView.vue';
+import ListeningLab from '../components/ListeningLab.vue';
+import StatsProgress from '../components/StatsProgress.vue';
+import DocumentManager from '../components/DocumentManager.vue';
+import SessionSummaries from '../components/SessionSummaries.vue';
+import SettingsModal from '../components/SettingsModal.vue';
 
-const activeTab = ref("documents");
+// App state
+const activeTab = ref('chat');
+const settingsModalOpen = ref(false);
+const currentJlpt = ref('N5');
+const hasApiServer = ref(true);
+
+// Chat messages state
+const chatMessages = ref([
+  {
+    id: 'welcome-1',
+    role: 'assistant',
+    content: 'Welcome to Koto Sensei Japanese Studio. How can I support your Japanese learning today?',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    jlptLevel: 'N5'
+  }
+]);
+
+// Mastered Flashcard IDs
+const masteredFlashcardIds = ref([]);
+
+// User Stats
+const userStats = ref({
+  streakDays: 3,
+  cardsMastered: 0,
+  cardsStudiedToday: 12,
+  chatSessionsCount: 1,
+  listeningCompleted: 1,
+  minutesSpent: 45,
+  level: 'N5',
+  savedVocabIds: ['dict-1', 'dict-2']
+});
+
+onMounted(() => {
+  try {
+    const savedMastered = localStorage.getItem('koto_mastered_flashcards');
+    if (savedMastered) {
+      masteredFlashcardIds.value = JSON.parse(savedMastered);
+    }
+
+    const savedStats = localStorage.getItem('koto_user_stats');
+    if (savedStats) {
+      userStats.value = JSON.parse(savedStats);
+    }
+
+    const savedJlpt = localStorage.getItem('koto_jlpt_level');
+    if (savedJlpt) {
+      currentJlpt.value = savedJlpt;
+    }
+  } catch (e) {
+    console.error('Error loading state from localStorage:', e);
+  }
+});
+
+watch(masteredFlashcardIds, (newVal) => {
+  try {
+    localStorage.setItem('koto_mastered_flashcards', JSON.stringify(newVal));
+    userStats.value.cardsMastered = newVal.length;
+    localStorage.setItem('koto_user_stats', JSON.stringify(userStats.value));
+  } catch (e) {
+    console.error('Error saving mastered flashcards:', e);
+  }
+}, { deep: true });
+
+watch(userStats, (newVal) => {
+  try {
+    localStorage.setItem('koto_user_stats', JSON.stringify(newVal));
+  } catch (e) {
+    console.error('Error saving stats:', e);
+  }
+}, { deep: true });
+
+watch(currentJlpt, (newVal) => {
+  try {
+    localStorage.setItem('koto_jlpt_level', newVal);
+    userStats.value.level = newVal;
+  } catch (e) {
+    console.error('Error saving JLPT level:', e);
+  }
+});
+
+function toggleMastered(id) {
+  if (masteredFlashcardIds.value.includes(id)) {
+    masteredFlashcardIds.value = masteredFlashcardIds.value.filter(item => item !== id);
+  } else {
+    masteredFlashcardIds.value.push(id);
+  }
+}
+
+function toggleSavedVocab(id) {
+  if (userStats.value.savedVocabIds.includes(id)) {
+    userStats.value.savedVocabIds = userStats.value.savedVocabIds.filter(item => item !== id);
+  } else {
+    userStats.value.savedVocabIds.push(id);
+  }
+}
+
+function handleListeningComplete() {
+  userStats.value.listeningCompleted += 1;
+}
+
+function handleResetStats() {
+  masteredFlashcardIds.value = [];
+  userStats.value = {
+    streakDays: 1,
+    cardsMastered: 0,
+    cardsStudiedToday: 0,
+    chatSessionsCount: 1,
+    listeningCompleted: 0,
+    minutesSpent: 10,
+    level: currentJlpt.value,
+    savedVocabIds: ['dict-1']
+  };
+}
 </script>
-
-<style scoped></style>
