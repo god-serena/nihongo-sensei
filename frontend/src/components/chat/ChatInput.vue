@@ -96,20 +96,20 @@ onBeforeUnmount(() => {
 <template>
   <div class="shrink-0">
     <!-- Input bar -->
-    <div class="h-[46px] flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 focus-within:ring-2 focus-within:ring-red-600 focus-within:border-transparent transition-all shadow-lg">
+    <div class="h-[56px] flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl p-2.5 focus-within:ring-2 focus-within:ring-red-600 focus-within:border-transparent transition-all shadow-lg">
       <input
         type="text"
         v-model="input"
         @keydown.enter.exact.prevent="handleSend"
         placeholder="Ask Sensei a question or type in Japanese (e.g. 「ありがとう」の意味は？)..."
         :disabled="loading || sttLoading"
-        class="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none px-2 font-sans"
+        class="flex-1 bg-transparent text-sm text-zinc-100 placeholder-zinc-500 focus:outline-none pr-2 font-sans"
       />
       <button
         @click="toggleMic"
         :disabled="loading || sttLoading"
         :class="[
-          'p-2.5 rounded-lg transition-all shrink-0 flex items-center gap-1.5 font-semibold text-xs border cursor-pointer',
+          'h-10 px-3 rounded-xl flex items-center justify-center shrink-0 transition-all font-semibold text-xs border cursor-pointer',
           isListening
             ? 'bg-red-600 text-white animate-pulse shadow-md shadow-red-600/30 border-red-400'
             : 'bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 border-zinc-700'
@@ -124,7 +124,7 @@ onBeforeUnmount(() => {
         @click="handleSend"
         :disabled="!input.trim() || loading || sttLoading"
         :class="[
-          'p-2.5 rounded-lg transition-all shrink-0 font-medium text-sm flex items-center justify-center cursor-pointer',
+          'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all font-medium text-sm cursor-pointer',
           input.trim() && !loading && !sttLoading
             ? 'bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/30 ring-1 ring-red-400'
             : 'bg-zinc-800 text-zinc-500 cursor-not-allowed border border-zinc-700'
