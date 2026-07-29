@@ -70,7 +70,7 @@ async function handleSave() {
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-800/80 bg-zinc-950/50">
           <div class="flex items-center gap-2">
-            <div class="p-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">
+            <div class="p-2 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20">
               <Cpu class="w-5 h-5" />
             </div>
             <div>
@@ -80,7 +80,7 @@ async function handleSave() {
           </div>
           <button
             @click="emit('close')"
-            class="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            class="p-2 rounded-xl border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
             aria-label="Close settings"
           >
             <X class="w-4 h-4" />
