@@ -13,6 +13,9 @@ class Session(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=True)
+    messages = Column(JSONB, nullable=False, default=list)
+    jlpt_level = Column(String(10), default="N4")
+    teaching_mode = Column(String(20), default="bilingual")
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = Column(
         DateTime,
