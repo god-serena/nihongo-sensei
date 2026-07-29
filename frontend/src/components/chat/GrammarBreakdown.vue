@@ -57,7 +57,7 @@ function handleSaveVocab(token: TokenAnalysis) {
     </div>
 
     <!-- Translation / Summary if available -->
-    <div v-if="analysis.translation" class="text-xs text-zinc-300 bg-zinc-950/60 p-2.5 rounded-lg border border-zinc-800/60">
+    <div v-if="analysis.translation" class="text-xs text-zinc-300 bg-zinc-950/60 p-2.5 rounded-xl border border-zinc-800/60">
       <span class="text-zinc-500 font-semibold uppercase text-[10px] tracking-wider block mb-1">Translation</span>
       {{ analysis.translation }}
     </div>
@@ -69,7 +69,7 @@ function handleSaveVocab(token: TokenAnalysis) {
         <div
           v-for="(token, index) in analysis.tokens"
           :key="index"
-          class="flex flex-col gap-1 p-2.5 rounded-lg bg-zinc-950 border border-zinc-800/80 hover:border-zinc-700 transition-all min-w-[100px]"
+          class="flex flex-col gap-1 p-2.5 rounded-xl bg-zinc-950 border border-zinc-800/80 hover:border-zinc-700 transition-all min-w-[100px]"
         >
           <!-- Surface & Reading -->
           <div class="flex flex-col">
