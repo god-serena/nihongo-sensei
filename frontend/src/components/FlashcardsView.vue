@@ -221,7 +221,7 @@ function deleteCustomCard(id: string) {
               Romaji: {{ currentCard.romaji }}
             </div>
 
-            <div v-if="currentCard.examples && currentCard.examples.length > 0" class="pt-4 border-t border-zinc-800 max-w-lg mx-auto text-left space-y-1 bg-zinc-950/80 p-3 rounded-xl border border-zinc-800">
+            <div v-if="currentCard.examples && currentCard.examples.length > 0" class="pt-4 border-t border-zinc-800 max-w-lg mx-auto text-left space-y-1 bg-zinc-950/80 p-3 rounded-lg border border-zinc-800">
               <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">Example Sentence:</span>
               <p class="text-sm font-jp font-semibold text-zinc-200">{{ currentCard.examples[0].japanese }}</p>
               <p class="text-xs font-jp text-red-400">{{ currentCard.examples[0].reading }}</p>
@@ -265,7 +265,7 @@ function deleteCustomCard(id: string) {
       <div class="flex items-center justify-between gap-4 px-2">
         <button
           @click="handlePrev"
-          class="flex-1 py-3 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-xl font-bold text-xs text-zinc-200 flex items-center justify-center gap-2 transition-all"
+          class="flex-1 py-3 px-4 bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 rounded-lg font-bold text-xs text-zinc-200 flex items-center justify-center gap-2 transition-all"
         >
           <ArrowLeft class="w-4 h-4 text-red-500" />
           Previous Card
@@ -273,7 +273,7 @@ function deleteCustomCard(id: string) {
 
         <button
           @click="handleNext"
-          class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/30 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition-all"
+          class="flex-1 py-3 px-4 bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/30 rounded-lg font-bold text-xs flex items-center justify-center gap-2 transition-all"
         >
           Next Card
           <ArrowRight class="w-4 h-4" />
