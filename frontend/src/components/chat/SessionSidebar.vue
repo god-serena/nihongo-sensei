@@ -94,26 +94,26 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
   <!-- Expanded floating drawer panel — absolute overlay on left -->
   <aside
     v-if="sidebarOpen"
-    class="absolute left-0 top-0 bottom-0 z-40 w-72 sm:w-80 shadow-2xl bg-zinc-900/98 backdrop-blur-md border-r border-zinc-800 rounded-xl flex flex-col min-w-0"
+    class="absolute left-0 top-0 bottom-0 z-40 w-72 shadow-2xl bg-zinc-900/98 backdrop-blur-md border-r border-zinc-800 rounded-xl flex flex-col min-w-0"
   >
     <div class="flex flex-col h-full min-w-0">
       <!-- Sidebar Header -->
-      <div class="flex items-center justify-between px-3 py-2.5 border-b border-zinc-800">
-        <span class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+      <div class="flex items-center justify-between p-2.5 border-b border-zinc-800">
+        <span class="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-2">
           <MessageSquare class="w-3.5 h-3.5 text-red-500" />
           Practice Sessions
         </span>
         <div class="flex items-center gap-1">
           <button
             @click="emit('toggle-sidebar')"
-            class="p-1.5 rounded-md hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer"
+            class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-all cursor-pointer"
             title="Collapse sidebar"
           >
             <ChevronsLeft class="w-3.5 h-3.5" />
           </button>
           <button
             @click="emit('new-session')"
-            class="p-1.5 rounded-md bg-red-600 hover:bg-red-500 text-white transition-all cursor-pointer"
+            class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-red-600 hover:bg-red-500 text-white transition-all cursor-pointer"
             title="New Practice"
           >
             <Plus class="w-3.5 h-3.5" />
@@ -122,16 +122,16 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
       </div>
 
       <!-- Sessions List -->
-      <div class="flex-1 overflow-y-auto p-2">
+      <div class="flex-1 overflow-y-auto p-2.5">
         <template v-if="loading">
-          <div class="text-xs text-zinc-500 px-2 py-4 text-center">Loading sessions...</div>
+          <div class="text-xs text-zinc-500 p-2.5 text-center">Loading sessions...</div>
         </template>
         <template v-else-if="sessions.length === 0">
-          <div class="text-xs text-zinc-500 px-2 py-4 text-center">No practice sessions yet.</div>
+          <div class="text-xs text-zinc-500 p-2.5 text-center">No practice sessions yet.</div>
         </template>
         <template v-else>
           <div v-for="(group, date) in groupByDate(sessions)" :key="date" class="mb-3">
-            <div class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider px-2 py-1">
+            <div class="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider p-2.5">
               {{ date }}
             </div>
             <div class="space-y-1">
@@ -140,7 +140,7 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
                 :key="s.id"
                 @click="editingSessionId !== s.id && emit('select-session', s)"
                 :class="[
-                  'flex items-center justify-between gap-1 px-2.5 py-2 rounded-lg text-sm transition-all',
+                  'flex items-center justify-between gap-1 px-2.5 py-2 rounded-xl  text-sm transition-all',
                   activeSessionId === s.id
                     ? 'bg-red-950/60 text-red-100 border border-red-900/40'
                     : 'text-zinc-300 hover:bg-zinc-800/80 border border-transparent'
@@ -153,12 +153,12 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
                     v-model="editingTitle"
                     @keydown.enter.prevent="saveRename(s.id)"
                     @keydown.esc="cancelRename"
-                    class="flex-1 bg-zinc-950 text-zinc-100 text-sm rounded-md px-2 py-1 border border-red-700 focus:outline-none focus:ring-1 focus:ring-red-500 font-medium truncate"
+                    class="flex-1 bg-zinc-950 text-zinc-100 text-sm rounded-xl  px-2 py-1 border border-red-700 focus:outline-none focus:ring-1 focus:ring-red-500 font-medium truncate"
                     autofocus
                   />
                   <button
                     @click="saveRename(s.id)"
-                    class="shrink-0 p-1 rounded hover:bg-red-900/60 text-red-400 transition-all cursor-pointer"
+                    class="shrink-0 w-7 h-7 rounded-md flex items-center justify-center ver:bg-red-900/60 text-red-400 transition-all cursor-pointer"
                     title="Save title"
                   >
                     <Check class="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
                   <!-- Rename button -->
                   <button
                     @click="startRename(s, $event)"
-                    class="shrink-0 p-1 rounded hover:bg-red-950/60 text-zinc-500 hover:text-red-400 transition-all cursor-pointer"
+                    class="shrink-0 w-7 h-7 rounded-md flex items-center justify-center ver:bg-red-950/60 text-zinc-500 hover:text-red-400 transition-all cursor-pointer"
                     title="Rename session"
                   >
                     <Pencil class="w-3.5 h-3.5" />
@@ -184,12 +184,12 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
                   <button
                     v-if="activeSessionId !== s.id"
                     @click="handleDeleteClick(s.id, $event)"
-                    class="shrink-0 p-1 rounded hover:bg-red-950 text-zinc-600 hover:text-red-400 transition-all cursor-pointer"
+                    class="shrink-0 w-7 h-7 rounded-md flex items-center justify-center ver:bg-red-950 text-zinc-600 hover:text-red-400 transition-all cursor-pointer"
                     title="Delete session"
                   >
                     <Trash2 class="w-3.5 h-3.5" />
                   </button>
-                  <span v-else class="shrink-0 text-[10px] px-1.5 py-0.5 rounded bg-red-950 text-red-400">
+                  <span v-else class="shrink-0 text-[10px] px-1.5 py-0.5 rounded-xl -red-950 text-red-400">
                     Active
                   </span>
                 </template>
@@ -207,7 +207,7 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
       @click="cancelDelete"
     >
       <div
-        class="bg-zinc-900 border border-zinc-700 rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl"
+        class="bg-zinc-900 border border-zinc-700 rounded-xl  p-6 max-w-sm w-full mx-4 shadow-2xl"
         @click.stop
       >
         <h3 class="text-lg font-bold text-white mb-2">Delete Session?</h3>
@@ -217,13 +217,13 @@ function groupByDate(sessionsList: Session[]): Record<string, Session[]> {
         <div class="flex gap-3 justify-end">
           <button
             @click="cancelDelete"
-            class="px-4 py-2 rounded-lg bg-zinc-800 text-zinc-300 hover:bg-zinc-700 cursor-pointer transition-all text-sm"
+            class="px-4 py-2 rounded-xl  bg-zinc-800 text-zinc-300 hover:bg-zinc-700 cursor-pointer transition-all text-sm"
           >
             Cancel
           </button>
           <button
             @click="confirmDelete"
-            class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-500 cursor-pointer transition-all text-sm"
+            class="px-4 py-2 rounded-xl  bg-red-600 text-white hover:bg-red-500 cursor-pointer transition-all text-sm"
           >
             Delete
           </button>
