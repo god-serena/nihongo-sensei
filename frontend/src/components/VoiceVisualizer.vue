@@ -1,5 +1,5 @@
 <template>
-    <canvas ref="canvasRef" class="w-full h-24 rounded-lg bg-gray-900"></canvas>
+    <canvas ref="canvasRef" class="w-full h-full rounded bg-transparent"></canvas>
 </template>
 
 <script setup>
@@ -7,8 +7,8 @@ import { ref, watch, onMounted, onUnmounted } from "vue";
 
 const props = defineProps({
     active: { type: Boolean, default: false },
-    barCount: { type: Number, default: 32 },
-    color: { type: String, default: "#6366f1" },
+    barCount: { type: Number, default: 24 },
+    color: { type: String, default: "#c84040" },
 });
 
 const emit = defineEmits(["error"]);
@@ -27,9 +27,8 @@ function drawBars() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Set canvas dimensions to match display size for crisp rendering
-    const rect = canvas.getBoundingClientRect();
-    if (canvas.width !== rect.width || canvas.height !== rect.height) {
+    const rect = canvas.getBoundingClientRect ? canvas.getBoundingClientRect() : { width: 320, height: 96 };
+    if (rect.width && rect.height && (canvas.width !== rect.width || canvas.height !== rect.height)) {
         canvas.width = rect.width;
         canvas.height = rect.height;
     }
@@ -40,21 +39,19 @@ function drawBars() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const barWidth = canvas.width / props.barCount;
+    const gap = 3;
+    const barWidth = Math.max(2, (canvas.width - gap * (props.barCount - 1)) / props.barCount);
     let x = 0;
 
     for (let i = 0; i < props.barCount; i++) {
-        // Map each bar to a frequency bin
         const index = Math.floor((i * bufferLength) / props.barCount);
         const value = dataArray[index] || 0;
 
-        // Scale bar height based on frequency data
-        const barHeight = (value / 255) * canvas.height * 0.9;
+        const barHeight = Math.max(3, (value / 255) * canvas.height * 0.85);
 
         ctx.fillStyle = props.color;
-        ctx.fillRect(x, canvas.height - barHeight, barWidth - 1, barHeight);
-
-        x += barWidth;
+        ctx.fillRect(x, canvas.height / 2 - barHeight / 2, barWidth, barHeight);
+        x += barWidth + gap;
     }
 
     animationId = requestAnimationFrame(drawBars);
