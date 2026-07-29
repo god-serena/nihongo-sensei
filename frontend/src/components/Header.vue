@@ -83,7 +83,7 @@ const tabNavs: { id: TabType; label: string; jp: string; icon: any }[] = [
         <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
           
           <!-- JLPT Level Pills (Desktop) -->
-          <div class="hidden sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800">
+          <div class="hidden sm:flex items-center gap-1 bg-zinc-900/90 p-1 rounded-xl border border-zinc-800">
             <span class="text-xs font-semibold text-zinc-400 px-2 flex items-center gap-1">
               <Compass class="w-3.5 h-3.5 text-red-500" />
               Level:
@@ -107,7 +107,7 @@ const tabNavs: { id: TabType; label: string; jp: string; icon: any }[] = [
           <button
             @click="() => emit('open-settings')"
             title="Settings"
-            class="p-2 rounded-lg border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all"
+            class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all cursor-pointer"
           >
             <Settings class="w-4 h-4" />
           </button>
@@ -117,42 +117,25 @@ const tabNavs: { id: TabType; label: string; jp: string; icon: any }[] = [
     </div>
 
     <!-- Bottom Row: Tab Navigation -->
-    <nav class="border-t border-zinc-800/50 px-4">
-      <div class="max-w-7xl mx-auto flex items-center justify-start sm:justify-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth">
-        <button
-          v-for="tab in tabNavs"
-          :key="tab.id"
-          @click="emit('update:tab', tab.id)"
-          :class="[
-            'relative flex items-center gap-2 px-4 py-2.5 font-semibold text-xs tracking-wide rounded-t-lg transition-all whitespace-nowrap border-t border-x',
-            activeTab === tab.id
-              ? 'bg-zinc-900 text-white border-zinc-700 border-b-zinc-900 shadow-sm'
-              : 'text-zinc-400 border-transparent hover:text-zinc-200 hover:bg-zinc-900/50'
-          ]"
-        >
-          <component
-            :is="tab.icon"
-            :class="activeTab === tab.id ? 'text-red-500' : 'text-zinc-500'"
-            class="w-4 h-4"
-          />
-          <span>{{ tab.label }}</span>
-          <span
+    <nav class="p-2.5 border-t border-zinc-800/60">
+      <div class="max-w-5xl mx-auto flex items-center justify-center">
+        <div class="p-2.5 bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-md flex w-full space-between gap-1">
+          <button
+            v-for="tab in tabNavs"
+            :key="tab.id"
+            @click="emit('update:tab', tab.id)"
             :class="[
-              'text-[10px] font-jp font-normal px-1.5 py-0.2 rounded',
+              'flex items-center justify-center gap-1 p-2.5 text-xs font-semibold rounded-md transition-all cursor-pointer flex-1',
               activeTab === tab.id
-                ? 'bg-red-950 text-red-300 border border-red-800/60'
-                : 'bg-zinc-900 text-zinc-500'
+                ? 'bg-red-600 text-white shadow-md shadow-red-600/30 font-bold'
+                : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
             ]"
           >
-            {{ tab.jp }}
-          </span>
-
-          <!-- Active Tab Red Indicator Bar -->
-          <span
-            v-if="activeTab === tab.id"
-            class="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 rounded-t-full shadow-md shadow-red-600"
-          ></span>
-        </button>
+            <component :is="tab.icon" class="w-4 h-4 shrink-0" />
+            <span class="truncate hidden sm:inline-block">{{ tab.label }}</span>
+            <span class="text-[10px] opacity-75 font-jp hidden lg:inline-block">({{ tab.jp }})</span>
+          </button>
+        </div>
       </div>
     </nav>
   </header>
