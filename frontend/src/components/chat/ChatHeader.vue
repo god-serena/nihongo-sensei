@@ -15,7 +15,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="shrink-0 flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-md">
+  <div class="shrink-0 flex flex-wrap items-center justify-between gap-2 p-2.5 bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-md">
     <div class="flex items-center gap-2">
       <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></span>
       <span v-if="activeSession" class="text-xs font-semibold text-zinc-200">
@@ -26,7 +26,7 @@ const emit = defineEmits<{
     </div>
 
     <!-- Teaching Mode Toggle Badge -->
-    <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800">
+    <div class="h-[46px] flex items-center gap-1 bg-zinc-950 p-2.5 bg-zinc-900/90 border border-zinc-800 rounded-xl shadow-md">
       <button
         @click="!isLocked && emit('update:teachingMode', 'bilingual')"
         :disabled="isLocked"
