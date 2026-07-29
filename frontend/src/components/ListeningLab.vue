@@ -85,7 +85,7 @@ function resetExercise() {
           :key="ex.id"
           @click="selectExercise(idx)"
           :class="[
-            'p-3 rounded-xl border text-left transition-all',
+            'p-3 rounded-lg border text-left transition-all',
             selectedIndex === idx
               ? 'bg-red-950/40 border-red-600/80 text-white'
               : 'bg-zinc-950 border-zinc-800 text-zinc-400 hover:text-zinc-200'
@@ -106,7 +106,7 @@ function resetExercise() {
     <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 shadow-xl space-y-6">
       
       <!-- Audio Playback Control Hero -->
-      <div class="bg-zinc-950 border border-zinc-800 rounded-xl p-6 text-center space-y-4">
+      <div class="bg-zinc-950 border border-zinc-800 rounded-lg p-6 text-center space-y-4">
         <div class="w-14 h-14 rounded-2xl bg-red-600/20 border border-red-500/50 text-red-500 mx-auto flex items-center justify-center shadow-lg shadow-red-600/20">
           <Headphones class="w-7 h-7" />
         </div>
@@ -118,7 +118,7 @@ function resetExercise() {
 
         <button
           @click="handlePlayAudio"
-          class="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-sm shadow-lg shadow-red-600/30 inline-flex items-center gap-2 transition-all"
+          class="px-6 py-3 rounded-lg bg-red-600 hover:bg-red-500 text-white font-bold text-sm shadow-lg shadow-red-600/30 inline-flex items-center gap-2 transition-all"
         >
           <Volume2 class="w-5 h-5" />
           Play Japanese Audio ({{ audioSpeed }}x)
@@ -139,7 +139,7 @@ function resetExercise() {
             @click="submitAnswer(optIdx)"
             :disabled="showAnswer"
             :class="[
-              'p-4 rounded-xl border font-semibold text-xs text-left transition-all flex items-center justify-between gap-2',
+              'p-4 rounded-lg border font-semibold text-xs text-left transition-all flex items-center justify-between gap-2',
               showAnswer && optIdx === currentExercise.correctIndex
                 ? 'bg-emerald-950/60 border-emerald-500 text-emerald-300'
                 : showAnswer && selectedOption === optIdx && optIdx !== currentExercise.correctIndex
@@ -157,7 +157,7 @@ function resetExercise() {
       <!-- Explanation & Script Reveal -->
       <div v-if="showAnswer" class="space-y-4 pt-4 border-t border-zinc-800">
         <!-- Transcript -->
-        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-1.5">
+        <div class="bg-zinc-950 p-4 rounded-lg border border-zinc-800 space-y-1.5">
           <span class="text-[10px] uppercase font-bold text-red-500 tracking-wider">Full Audio Transcript:</span>
           <p class="text-base font-jp font-bold text-white">{{ currentExercise.japaneseText }}</p>
           <p class="text-xs font-jp text-red-400">{{ currentExercise.reading }}</p>
@@ -165,7 +165,7 @@ function resetExercise() {
         </div>
 
         <!-- Explanation -->
-        <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-1">
+        <div class="bg-zinc-950 p-4 rounded-lg border border-zinc-800 space-y-1">
           <span class="text-[10px] uppercase font-bold text-zinc-400 tracking-wider">Explanation:</span>
           <p class="text-xs text-zinc-300 leading-relaxed">{{ currentExercise.explanation }}</p>
         </div>
