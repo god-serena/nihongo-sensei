@@ -1,101 +1,62 @@
 <template>
-    <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-xl font-semibold text-gray-800">Session Summaries</h2>
-            <button
-                :disabled="summaryStore.generating"
-                @click="onGenerate"
-                class="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-                {{ summaryStore.generating ? "Generating…" : "Generate Summary" }}
-            </button>
-        </div>
-
-        <!-- Error feedback -->
-        <div v-if="summaryStore.error" class="mb-4 rounded-lg bg-red-50 p-3 text-sm text-red-600">
-            {{ summaryStore.error }}
-        </div>
-
-        <!-- No summaries yet -->
-        <div
-            v-if="!summaryStore.summaries.length && !summaryStore.generating"
-            class="text-center py-8 text-gray-400"
-        >
-            No summaries yet. Generate one to see structured session insights.
-        </div>
-
-        <!-- Summary cards -->
-        <div
-            v-for="(item, idx) in summaryStore.summaries"
-            :key="item.id || idx"
-            class="mb-6 rounded-xl border border-gray-200 bg-gray-50 p-5"
-        >
-            <!-- Topics -->
-            <div v-if="item.summary?.topics?.length" class="mb-4">
-                <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Topics
-                </h3>
-                <ul class="list-inside list-disc space-y-1 text-gray-700">
-                    <li v-for="topic in item.summary.topics" :key="topic">{{ topic }}</li>
-                </ul>
-            </div>
-
-            <!-- New Vocabulary -->
-            <div v-if="item.summary?.new_vocabulary?.length" class="mb-4">
-                <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    New Vocabulary
-                </h3>
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500">
-                            <th class="pb-2 pr-4 font-medium">Term</th>
-                            <th class="pb-2 pr-4 font-medium">Reading</th>
-                            <th class="pb-2 font-medium">Meaning</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-200">
-                        <tr v-for="vocab in item.summary.new_vocabulary" :key="vocab.term">
-                            <td class="pr-4 py-2 font-medium text-gray-800">
-                                {{ vocab.term }}
-                            </td>
-                            <td class="pr-4 py-2 text-gray-600">{{ vocab.reading }}</td>
-                            <td class="py-2 text-gray-600">{{ vocab.meaning }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Mistakes -->
-            <div v-if="item.summary?.mistakes?.length" class="mt-4">
-                <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-gray-500">
-                    Mistakes
-                </h3>
-                <div class="space-y-2">
-                    <details
-                        v-for="(mistake, mIdx) in item.summary.mistakes"
-                        :key="mIdx"
-                        class="rounded-lg border border-gray-200 bg-white"
-                    >
-                        <summary
-                            class="cursor-pointer list-none p-3 text-sm font-medium text-gray-700"
-                        >
-                            {{ mistake.original }}
-                        </summary>
-                        <div class="border-t border-gray-200 p-3 text-sm text-gray-600">
-                            <p>
-                                <span class="font-medium text-gray-700">Correction:</span>
-                                {{ mistake.correction }}
-                            </p>
-                            <p class="mt-1">
-                                <span class="font-medium text-gray-700">Explanation:</span>
-                                {{ mistake.explanation }}
-                            </p>
-                        </div>
-                    </details>
-                </div>
-            </div>
-        </div>
+  <div class="space-y-4">
+    <div class="flex items-center justify-between">
+      <h2 class="text-[15px] font-semibold text-gray-900">Session Summaries</h2>
+      <button
+        :disabled="summaryStore.generating"
+        @click="onGenerate"
+        class="rounded-lg bg-gray-900 text-white px-3.5 py-1.5 text-[12px] font-semibold hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+      >{{ summaryStore.generating ? "Generating…" : "Generate Summary" }}</button>
     </div>
+
+    <!-- Error -->
+    <div v-if="summaryStore.error" class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-[12px] text-red-600">{{ summaryStore.error }}</div>
+
+    <!-- Empty state -->
+    <div v-if="!summaryStore.summaries.length && !summaryStore.generating" class="text-center py-8 text-[13px] text-gray-400">
+      No summaries yet. Generate one to see structured session insights.
+    </div>
+
+    <!-- Summary cards -->
+    <div v-for="(item, idx) in summaryStore.summaries" :key="item.id || idx" class="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+      <!-- Topics -->
+      <div v-if="item.summary?.topics?.length">
+        <h3 class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Topics</h3>
+        <div class="flex flex-wrap gap-1.5">
+          <span v-for="topic in item.summary.topics" :key="topic" class="px-2 py-0.5 rounded bg-gray-200 text-[12px] font-medium text-gray-700">{{ topic }}</span>
+        </div>
+      </div>
+
+      <!-- Vocabulary -->
+      <div v-if="item.summary?.new_vocabulary?.length">
+        <h3 class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">New Vocabulary</h3>
+        <table class="min-w-full divide-y divide-gray-200 text-[12px]">
+          <thead><tr class="text-left text-gray-500"><th class="pb-1 pr-3 font-medium">Term</th><th class="pb-1 pr-3 font-medium">Reading</th><th class="pb-1 font-medium">Meaning</th></tr></thead>
+          <tbody class="divide-y divide-gray-100 text-gray-700">
+            <tr v-for="v in item.summary.new_vocabulary" :key="v.term">
+              <td class="py-1.5 pr-3 font-semibold text-gray-900">{{ v.term }}</td>
+              <td class="py-1.5 pr-3">{{ v.reading }}</td>
+              <td class="py-1.5">{{ v.meaning }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mistakes -->
+      <div v-if="item.summary?.mistakes?.length">
+        <h3 class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Mistakes</h3>
+        <div class="space-y-1.5">
+          <details v-for="(m, mIdx) in item.summary.mistakes" :key="mIdx" class="rounded-lg border border-gray-200 bg-white overflow-hidden">
+            <summary class="cursor-pointer list-none px-3 py-2 text-[12px] font-medium text-gray-800 select-none">{{ m.original }}</summary>
+            <div class="border-t border-gray-200 px-3 py-2 text-[12px] text-gray-600 space-y-1 bg-gray-50">
+              <p><span class="font-semibold text-gray-800">Correction:</span> {{ m.correction }}</p>
+              <p><span class="font-semibold text-gray-800">Explanation:</span> {{ m.explanation }}</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -103,20 +64,16 @@ import { useSummaryStore } from "@/stores/summaries";
 
 const summaryStore = useSummaryStore();
 
-// Exposes session ID, messages, and llmConfig to the parent
 const props = defineProps({
-    sessionId: { type: String, required: true },
-    messages: { type: Array, default: () => [] },
-    llmConfig: { type: Object, default: () => ({}) },
+  sessionId: { type: String, required: true },
+  messages:  { type: Array,  default: () => [] },
+  llmConfig: { type: Object, default: () => ({}) },
 });
 
 const emit = defineEmits(["error"]);
 
 async function onGenerate() {
-    try {
-        await summaryStore.generate(props.sessionId, props.messages, props.llmConfig);
-    } catch (e) {
-        emit("error", e.message);
-    }
+  try { await summaryStore.generate(props.sessionId, props.messages, props.llmConfig); }
+  catch (e) { emit("error", e.message); }
 }
 </script>
