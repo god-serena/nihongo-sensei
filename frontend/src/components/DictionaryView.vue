@@ -79,7 +79,7 @@ function isSaved(id: string) {
           v-model="query"
           type="text"
           placeholder="Type Kanji, Hiragana, Romaji or English (e.g., '桜', 'sakura', 'cherry')..."
-          class="w-full bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 rounded-xl pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 font-sans"
+          class="w-full bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 font-sans"
         />
       </div>
     </div>
@@ -100,7 +100,7 @@ function isSaved(id: string) {
       <div
         v-for="entry in filteredEntries"
         :key="entry.id"
-        class="bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800/80 hover:border-red-600/40 rounded-xl p-5 transition-all shadow-md flex flex-col justify-between space-y-3 group"
+        class="bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800/80 hover:border-red-600/40 rounded-lg p-5 transition-all shadow-md flex flex-col justify-between space-y-3 group"
       >
         <!-- Card Header -->
         <div class="flex items-start justify-between gap-3">
