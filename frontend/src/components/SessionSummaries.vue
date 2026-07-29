@@ -5,12 +5,12 @@
       <button
         :disabled="summaryStore.generating"
         @click="onGenerate"
-        class="rounded-lg bg-gray-900 text-white px-3.5 py-1.5 text-[12px] font-semibold hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        class="rounded-xl bg-gray-900 text-white px-3.5 py-1.5 text-[12px] font-semibold hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
       >{{ summaryStore.generating ? "Generating…" : "Generate Summary" }}</button>
     </div>
 
     <!-- Error -->
-    <div v-if="summaryStore.error" class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-[12px] text-red-600">{{ summaryStore.error }}</div>
+    <div v-if="summaryStore.error" class="rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-[12px] text-red-600">{{ summaryStore.error }}</div>
 
     <!-- Empty state -->
     <div v-if="!summaryStore.summaries.length && !summaryStore.generating" class="text-center py-8 text-[13px] text-gray-400">
@@ -46,7 +46,7 @@
       <div v-if="item.summary?.mistakes?.length">
         <h3 class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-1">Mistakes</h3>
         <div class="space-y-1.5">
-          <details v-for="(m, mIdx) in item.summary.mistakes" :key="mIdx" class="rounded-lg border border-gray-200 bg-white overflow-hidden">
+          <details v-for="(m, mIdx) in item.summary.mistakes" :key="mIdx" class="rounded-xl border border-gray-200 bg-white overflow-hidden">
             <summary class="cursor-pointer list-none px-3 py-2 text-[12px] font-medium text-gray-800 select-none">{{ m.original }}</summary>
             <div class="border-t border-gray-200 px-3 py-2 text-[12px] text-gray-600 space-y-1 bg-gray-50">
               <p><span class="font-semibold text-gray-800">Correction:</span> {{ m.correction }}</p>
