@@ -50,6 +50,38 @@ def test_health_check(client):
     assert data["service"] == "kotosensei-backend"
 
 
+# ── GET & POST /api/settings ───────────────────────────────────────────────────
+
+
+def test_get_and_post_settings(client):
+    """GET /api/settings and POST /api/settings persist settings."""
+    # Test GET defaults
+    res_get = client.get("/api/settings")
+    assert res_get.status_code == 200
+    data = res_get.json()
+    assert "provider" in data
+    assert "base_url" in data
+
+    # Test POST update
+    payload = {
+        "provider": "local",
+        "base_url": "http://localhost:1234/v1",
+        "model": "qwen2.5",
+        "custom_system_prompt": "Speak politely.",
+    }
+    res_post = client.post("/api/settings", json=payload)
+    assert res_post.status_code == 200
+    updated = res_post.json()
+    assert updated["base_url"] == "http://localhost:1234/v1"
+    assert updated["model"] == "qwen2.5"
+    assert updated["custom_system_prompt"] == "Speak politely."
+
+    # Verify GET returns updated settings
+    res_get2 = client.get("/api/settings")
+    assert res_get2.json()["base_url"] == "http://localhost:1234/v1"
+
+
+
 # ── POST /api/chat ─────────────────────────────────────────────────────────────
 
 
