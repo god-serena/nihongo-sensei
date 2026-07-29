@@ -28,7 +28,7 @@
     </div>
 
     <!-- Error -->
-    <div v-if="documentStore.error" class="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-[12px] text-red-600">{{ documentStore.error }}</div>
+    <div v-if="documentStore.error" class="rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-[12px] text-red-600">{{ documentStore.error }}</div>
 
     <!-- Document list -->
     <div v-if="documentStore.documents.length" class="space-y-2">
