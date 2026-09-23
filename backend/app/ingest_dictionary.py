@@ -20,9 +20,16 @@ JMDICT_URL = "https://ftp.edrdg.org/pub/Nihongo/JMdict_e.gz"
 BATCH_SIZE = 1000
 
 
+import ssl
+
 def download_jmdict(dest_path: str):
     print(f"Downloading JMdict from {JMDICT_URL}...")
-    urllib.request.urlretrieve(JMDICT_URL, dest_path)
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    req = urllib.request.Request(JMDICT_URL, headers={'User-Agent': 'Mozilla/5.0'})
+    with urllib.request.urlopen(req, context=ctx) as response, open(dest_path, 'wb') as out_file:
+        out_file.write(response.read())
     print("Download complete.")
 
 
