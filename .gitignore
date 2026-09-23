@@ -15,3 +15,6 @@ out/
 *.sqlite
 .pi
 plans
+env.d.ts
+# Dictionary archive
+backend/JMdict_e.gz
