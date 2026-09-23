@@ -1,191 +1,225 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { Search, Volume2, Bookmark, BookmarkCheck, Sparkles, Filter } from 'lucide-vue-next';
-import type { DictionaryEntry, JLPTLevel } from '../types';
-import { INITIAL_DICTIONARY as dictionaryEntries } from '../data/japaneseData';
-import { speakJapanese } from '../services/api';
-
-const props = defineProps<{
-  savedVocabIds: string[];
-}>();
-
-const emit = defineEmits<{
-  (e: 'toggle-saved-vocab', id: string): void;
-}>();
+import { ref, watch, onMounted, onUnmounted } from 'vue';
+import { Sparkles, Loader2 } from 'lucide-vue-next';
+import type { DictionaryEntry } from '../types';
+import { INITIAL_DICTIONARY } from '../data/japaneseData';
+import { speakJapanese, searchDictionary, analyzeDictionaryEntry } from '../services/api';
+import DictionaryToast from './dictionary/DictionaryToast.vue';
+import DictionarySearchHeader from './dictionary/DictionarySearchHeader.vue';
+import DictionaryCardItem from './dictionary/DictionaryCardItem.vue';
 
 const query = ref('');
-const selectedJlptFilter = ref<string>('ALL');
+const entries = ref<DictionaryEntry[]>([]);
+const isLoading = ref<boolean>(false);
+const isLoadingMore = ref<boolean>(false);
+const offset = ref<number>(0);
+const hasMore = ref<boolean>(true);
 
-const filteredEntries = computed(() => {
-  return dictionaryEntries.filter(entry => {
-    const matchesQuery =
-      !query.value ||
-      entry.kanji.toLowerCase().includes(query.value.toLowerCase()) ||
-      entry.reading.toLowerCase().includes(query.value.toLowerCase()) ||
-      entry.romaji.toLowerCase().includes(query.value.toLowerCase()) ||
-      entry.meanings.some(m => m.toLowerCase().includes(query.value.toLowerCase()));
+const sentinelRef = ref<HTMLElement | null>(null);
+let observer: IntersectionObserver | null = null;
 
-    const matchesJlpt = selectedJlptFilter.value === 'ALL' || entry.jlpt === selectedJlptFilter.value;
+const analysisLoading = ref<Record<string, boolean>>({});
+const analysisData = ref<Record<string, { romaji: string; jlpt_level: string; nuance: string; example?: { japanese: string; hiragana: string; english: string } }>>({});
 
-    return matchesQuery && matchesJlpt;
-  });
+const toastMessage = ref<string>('');
+let toastTimer: ReturnType<typeof setTimeout> | null = null;
+
+function showToast(message: string) {
+  toastMessage.value = message;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toastMessage.value = '';
+  }, 3000);
+}
+
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function performSearch() {
+  isLoading.value = true;
+  offset.value = 0;
+  hasMore.value = true;
+  try {
+    const results = await searchDictionary(query.value, 0, 30);
+    entries.value = results;
+    if (results.length < 30) {
+      hasMore.value = false;
+    }
+  } catch (err) {
+    console.warn('Failed to search dictionary via API, using fallback filter:', err);
+    entries.value = INITIAL_DICTIONARY.filter(entry => {
+      const matchesQuery =
+        !query.value ||
+        entry.kanji.toLowerCase().includes(query.value.toLowerCase()) ||
+        entry.reading.toLowerCase().includes(query.value.toLowerCase()) ||
+        (entry.romaji ? entry.romaji.toLowerCase().includes(query.value.toLowerCase()) : false) ||
+        entry.meanings.some(m => m.toLowerCase().includes(query.value.toLowerCase()));
+
+      return matchesQuery;
+    });
+    hasMore.value = false;
+  } finally {
+    isLoading.value = false;
+  }
+}
+
+async function fetchMoreEntries() {
+  if (isLoadingMore.value || isLoading.value || !hasMore.value) return;
+  isLoadingMore.value = true;
+  const nextOffset = offset.value + 30;
+  try {
+    const nextResults = await searchDictionary(query.value, nextOffset, 30);
+    if (nextResults.length > 0) {
+      entries.value.push(...nextResults);
+      offset.value = nextOffset;
+    }
+    if (nextResults.length < 30) {
+      hasMore.value = false;
+    }
+  } catch (err) {
+    console.warn('Failed to load more dictionary entries:', err);
+    hasMore.value = false;
+  } finally {
+    isLoadingMore.value = false;
+  }
+}
+
+function debouncedSearch() {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    performSearch();
+  }, 300);
+}
+
+watch([query], () => {
+  debouncedSearch();
+});
+
+function handleScroll(e: Event) {
+  const target = e.target as HTMLElement;
+  if (!target) return;
+  if (target.scrollHeight - target.scrollTop - target.clientHeight < 300) {
+    if (hasMore.value && !isLoadingMore.value && !isLoading.value) {
+      fetchMoreEntries();
+    }
+  }
+}
+
+watch(sentinelRef, (el) => {
+  if (el && observer) {
+    observer.observe(el);
+  }
+});
+
+onMounted(() => {
+  performSearch();
+
+  observer = new IntersectionObserver(
+    (observerEntries) => {
+      if (
+        observerEntries[0].isIntersecting &&
+        hasMore.value &&
+        !isLoadingMore.value &&
+        !isLoading.value
+      ) {
+        fetchMoreEntries();
+      }
+    },
+    { rootMargin: '300px' }
+  );
+
+  const mainEl = document.querySelector('main');
+  if (mainEl) {
+    mainEl.addEventListener('scroll', handleScroll);
+  }
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
+  const mainEl = document.querySelector('main');
+  if (mainEl) {
+    mainEl.removeEventListener('scroll', handleScroll);
+  }
 });
 
 function handleSpeak(text: string) {
   speakJapanese(text);
 }
 
-function isSaved(id: string) {
-  return props.savedVocabIds.includes(id);
+async function handleAskAI(entry: DictionaryEntry) {
+  if (analysisLoading.value[entry.id]) return;
+  analysisLoading.value[entry.id] = true;
+  try {
+    const res = await analyzeDictionaryEntry({
+      kanji: entry.kanji,
+      reading: entry.reading,
+      meanings: entry.meanings,
+    });
+    analysisData.value[entry.id] = res;
+  } catch (err: any) {
+    analysisData.value[entry.id] = {
+      romaji: entry.reading,
+      jlpt_level: 'N3',
+      nuance: `Analysis error: ${err?.message || 'Failed to connect to AI Sensei'}`,
+    };
+  } finally {
+    analysisLoading.value[entry.id] = false;
+  }
+}
+
+function handleAddFlashcard(entry: DictionaryEntry) {
+  showToast(`Added '${entry.kanji || entry.reading}' to Flashcard Queue!`);
 }
 </script>
 
 <template>
-  <div class="max-w-5xl mx-auto px-4 py-4 w-full space-y-6">
-    
+  <div class="max-w-5xl mx-auto px-4 py-4 w-full space-y-6 relative">
+    <!-- Toast Notification -->
+    <DictionaryToast :message="toastMessage" />
+
     <!-- Header & Search Box -->
-    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5 shadow-lg space-y-4">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
-          <h2 class="text-base font-bold text-white flex items-center gap-2">
-            Japanese Dictionary & Pitch Accent Reference
-            <span class="text-xs font-mono font-normal px-2 py-0.5 rounded bg-red-950 text-red-400 border border-red-800">
-              {{ filteredEntries.length }} Entries
-            </span>
-          </h2>
-          <p class="text-xs text-zinc-400">Search by Kanji, Hiragana, Romaji, or English meanings.</p>
-        </div>
-
-        <!-- JLPT Filter Buttons -->
-        <div class="flex items-center gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs font-semibold">
-          <button
-            v-for="lvl in ['ALL', 'N5', 'N4', 'N3', 'N2', 'N1']"
-            :key="lvl"
-            @click="selectedJlptFilter = lvl"
-            :class="[
-              'px-2.5 py-1 rounded transition-colors',
-              selectedJlptFilter === lvl ? 'bg-red-600 text-white font-bold' : 'text-zinc-400 hover:text-white'
-            ]"
-          >
-            {{ lvl }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Search Input Bar -->
-      <div class="relative">
-        <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-        <input
-          v-model="query"
-          type="text"
-          placeholder="Type Kanji, Hiragana, Romaji or English (e.g., '桜', 'sakura', 'cherry')..."
-          class="w-full bg-zinc-950 border border-zinc-800 text-white placeholder-zinc-500 rounded-lg pl-10 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 font-sans"
-        />
-      </div>
-    </div>
+    <DictionarySearchHeader
+      v-model:query="query"
+      :is-loading="isLoading"
+    />
 
     <!-- Dictionary Cards Grid -->
-    <div v-if="filteredEntries.length === 0" class="text-center py-16 bg-zinc-900 border border-zinc-800 rounded-2xl">
+    <div v-if="isLoading && entries.length === 0" class="text-center py-16 bg-zinc-900 border border-zinc-800 rounded-2xl">
+      <Loader2 class="w-8 h-8 text-red-500 mx-auto mb-2 animate-spin" />
+      <p class="text-zinc-300 font-semibold text-sm">Searching dictionary entries...</p>
+    </div>
+
+    <div v-else-if="entries.length === 0" class="text-center py-16 bg-zinc-900 border border-zinc-800 rounded-2xl">
       <Sparkles class="w-8 h-8 text-red-500 mx-auto mb-2 opacity-60" />
       <p class="text-zinc-300 font-semibold text-sm">No dictionary entries matched your query.</p>
       <button
-        @click="query = ''; selectedJlptFilter = 'ALL'"
+        @click="query = ''"
         class="mt-3 px-3 py-1.5 bg-zinc-800 text-xs font-bold text-zinc-200 rounded-lg border border-zinc-700 hover:text-white"
       >
-        Clear Search & Filters
+        Clear Search
       </button>
     </div>
 
-    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div
-        v-for="entry in filteredEntries"
-        :key="entry.id"
-        class="bg-zinc-900/90 hover:bg-zinc-900 border border-zinc-800/80 hover:border-red-600/40 rounded-lg p-5 transition-all shadow-md flex flex-col justify-between space-y-3 group"
-      >
-        <!-- Card Header -->
-        <div class="flex items-start justify-between gap-3">
-          <div class="flex items-baseline gap-3">
-            <span class="text-3xl font-bold font-jp text-white">
-              {{ entry.kanji }}
-            </span>
-            <div class="flex flex-col">
-              <span class="text-sm font-semibold text-red-400 font-jp">
-                {{ entry.reading }}
-              </span>
-              <span class="text-[11px] font-mono text-zinc-500">
-                {{ entry.romaji }}
-              </span>
-            </div>
-          </div>
+    <div v-else class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <DictionaryCardItem
+          v-for="entry in entries"
+          :key="entry.id"
+          :entry="entry"
+          :is-analyzing="!!analysisLoading[entry.id]"
+          :analysis="analysisData[entry.id]"
+          @speak="handleSpeak"
+          @ask-ai="handleAskAI"
+          @add-flashcard="handleAddFlashcard"
+        />
+      </div>
 
-          <div class="flex items-center gap-1.5">
-            <span class="text-[10px] font-bold text-red-400 bg-red-950 px-2 py-0.5 rounded border border-red-800">
-              {{ entry.jlpt }}
-            </span>
-
-            <button
-              @click="handleSpeak(entry.reading || entry.kanji)"
-              class="p-1.5 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-200 transition-colors"
-              title="Pronounce word"
-            >
-              <Volume2 class="w-3.5 h-3.5 text-red-500" />
-            </button>
-
-            <button
-              @click="emit('toggle-saved-vocab', entry.id)"
-              :class="[
-                'p-1.5 rounded-lg border transition-colors',
-                isSaved(entry.id)
-                  ? 'bg-red-600/20 border-red-500 text-red-400'
-                  : 'bg-zinc-800 border-zinc-700 text-zinc-400 hover:text-white'
-              ]"
-              :title="isSaved(entry.id) ? 'Remove from saved vocabulary' : 'Save to vocabulary list'"
-            >
-              <BookmarkCheck v-if="isSaved(entry.id)" class="w-3.5 h-3.5 text-red-500" />
-              <Bookmark v-else class="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-
-        <!-- Part of Speech & Meanings -->
-        <div class="space-y-2">
-          <div class="flex flex-wrap gap-1">
-            <span
-              v-for="(p, idx) in entry.pos"
-              :key="idx"
-              class="text-[10px] uppercase font-bold text-zinc-400 bg-zinc-950 px-2 py-0.5 rounded border border-zinc-800"
-            >
-              {{ p }}
-            </span>
-            <span v-if="entry.pitchAccent" class="text-[10px] font-mono text-amber-400 bg-amber-950/40 px-2 py-0.5 rounded border border-amber-900/50">
-              Pitch: {{ entry.pitchAccent }}
-            </span>
-          </div>
-
-          <div class="text-sm font-medium text-zinc-200">
-            <ol class="list-decimal list-inside space-y-0.5">
-              <li v-for="(m, idx) in entry.meanings" :key="idx">
-                {{ m }}
-              </li>
-            </ol>
-          </div>
-        </div>
-
-        <!-- Example Sentence -->
-        <div v-if="entry.examples && entry.examples.length > 0" class="pt-3 border-t border-zinc-800/80 space-y-1 bg-zinc-950/60 p-2.5 rounded-lg border border-zinc-800/50">
-          <p class="text-xs font-jp font-semibold text-zinc-300">
-            {{ entry.examples[0].jp }}
-          </p>
-          <p class="text-[11px] font-jp text-red-400">
-            {{ entry.examples[0].reading }}
-          </p>
-          <p class="text-[11px] text-zinc-400 italic">
-            {{ entry.examples[0].en }}
-          </p>
-        </div>
-
+      <!-- Sentinel Element for Infinite Scroll -->
+      <div ref="sentinelRef" class="py-4 flex justify-center items-center min-h-[40px]">
+        <Loader2 v-if="isLoadingMore" class="w-6 h-6 text-red-500 animate-spin" />
       </div>
     </div>
-
   </div>
 </template>
+
