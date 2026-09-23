@@ -1,4 +1,4 @@
-import { ChatMessage, JLPTLevel, AppSettings, Session } from '../types';
+import { ChatMessage, JLPTLevel, AppSettings, Session, DictionaryEntry } from '../types';
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api').replace(/\/$/, '');
 
@@ -250,5 +250,50 @@ export async function deleteSession(sessionId: number): Promise<void> {
     throw new Error(`Failed to delete session: ${response.status}`);
   }
 }
+
+export async function searchDictionary(
+  query: string = '',
+  offset: number = 0,
+  limit: number = 30
+): Promise<DictionaryEntry[]> {
+  const params = new URLSearchParams();
+  if (query) params.append('q', query);
+  params.append('offset', offset.toString());
+  params.append('limit', limit.toString());
+
+  const url = buildUrl(`/api/dictionary/search?${params.toString()}`);
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to search dictionary: ${response.status}`);
+  }
+  return response.json();
+}
+
+export async function analyzeDictionaryEntry(payload: {
+  kanji: string;
+  reading: string;
+  meanings: string[];
+}): Promise<{
+  romaji: string;
+  jlpt_level: string;
+  nuance: string;
+  example?: {
+    japanese: string;
+    hiragana: string;
+    english: string;
+  };
+}> {
+  const response = await fetch(buildUrl('/api/dictionary/analyze'), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error(`Failed to analyze dictionary entry: ${response.status}`);
+  }
+  return response.json();
+}
+
+
 
 

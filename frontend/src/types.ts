@@ -69,10 +69,10 @@ export interface DictionaryEntry {
   id: string;
   kanji: string;
   reading: string;
-  romaji: string;
+  romaji?: string;
   meanings: string[];
   pos: string[];
-  jlpt: JLPTLevel;
+  jlpt?: JLPTLevel;
   frequencyRank?: number;
   pitchAccent?: string;
   examples: {
@@ -80,7 +80,18 @@ export interface DictionaryEntry {
     reading: string;
     en: string;
   }[];
+  aiAnalysis?: {
+    romaji: string;
+    jlpt_level: string;
+    nuance: string;
+    example?: {
+      japanese: string;
+      hiragana: string;
+      english: string;
+    };
+  };
 }
+
 
 
 export interface ListeningExercise {
