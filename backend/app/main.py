@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from app.database import engine
 from app.models import Base
-from app.routers import health, chat, rag, summaries, speech, settings, sessions
+from app.routers import health, chat, rag, summaries, speech, settings, sessions, dictionary
 
 # Ensure pgvector extension and all database tables exist in PostgreSQL
 try:
@@ -38,4 +38,6 @@ app.include_router(summaries.router, prefix="/api")
 app.include_router(speech.router, prefix="/api")
 app.include_router(speech.router)
 app.include_router(sessions.router, prefix="/api")
+app.include_router(dictionary.router, prefix="/api")
+
 
