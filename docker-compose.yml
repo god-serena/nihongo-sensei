@@ -23,6 +23,8 @@ services:
       LM_STUDIO_BASE_URL: ${LM_STUDIO_BASE_URL:-http://localhost:1234}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       OPENAI_API_KEY: ${OPENAI_API_KEY}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000}
+      IS_DEV: "true"
       PYTHONDONTWRITEBYTECODE: 1
       PYTHONUNBUFFERED: 1
     ports:
@@ -33,6 +35,8 @@ services:
         target: /app
     depends_on:
       - postgres
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   frontend:
     build:
