@@ -27,14 +27,16 @@ const emit = defineEmits<{
   (e: 'update:messages', newMessages: ChatMessage[]): void;
   (e: 'save-vocab', word: string): void;
   (e: 'clear-messages'): void;
+  (e: 'update:jlpt', level: JLPTLevel): void;
+  (e: 'update:isLocked', locked: boolean): void;
 }>();
 
 // ── Orchestrator State ──────────────────────────────────────────────────────
-const sidebarOpen = ref(true);
+const sidebarOpen = ref(false);
 const sessions = ref<Session[]>([]);
 const activeSession = ref<Session | null>(null);
 const sidebarLoading = ref(true);
-const isTeachingModeLocked = ref(false);
+const isSessionLocked = ref(false);
 const teachingMode = ref<'bilingual' | 'immersion'>('bilingual');
 
 const loading = ref(false);
@@ -64,27 +66,38 @@ async function loadSessions() {
   }
 }
 
-async function handleNewSession() {
-  try {
-    const created = await createSession({ title: 'New Practice' });
-    emit('clear-messages');
-    activeSession.value = created;
-    isTeachingModeLocked.value = false;
-    await loadSessions();
-    sidebarOpen.value = true;
-  } catch (e) {
-    console.error('Failed to create session:', e);
-  }
+function handleNewSession() {
+  localStorage.removeItem('koto_active_session_id');
+  activeSession.value = null;
+  const initialMsg: ChatMessage = {
+    id: `welcome-${Date.now()}`,
+    role: 'assistant',
+    content: 'Welcome to Koto Sensei Japanese Studio.\n\nHow can I support your Japanese learning today? You can practice conversation, ask grammar questions, or request vocabulary explanations!',
+    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    jlptLevel: props.currentJlpt
+  };
+  emit('update:messages', [initialMsg]);
+  isSessionLocked.value = false;
+  emit('update:isLocked', false);
 }
 
 async function handleSelectSession(session: Session) {
   try {
+    localStorage.setItem('koto_active_session_id', String(session.id));
     const full = await fetchSessionById(session.id);
     activeSession.value = full;
-    teachingMode.value = full.teaching_mode;
-    isTeachingModeLocked.value = true;
+    if (full.teaching_mode) {
+      teachingMode.value = full.teaching_mode;
+    }
+    if (full.jlpt_level) {
+      emit('update:jlpt', full.jlpt_level);
+    }
+    isSessionLocked.value = true;
+    emit('update:isLocked', true);
     if (full.messages && full.messages.length > 0) {
       emit('update:messages', full.messages);
+    } else {
+      emit('clear-messages');
     }
   } catch (e) {
     console.error('Failed to select session:', e);
@@ -95,8 +108,11 @@ async function handleDeleteSession(sessionId: number) {
   try {
     await deleteSession(sessionId);
     if (activeSession.value?.id === sessionId) {
+      localStorage.removeItem('koto_active_session_id');
       activeSession.value = null;
       emit('clear-messages');
+      isSessionLocked.value = false;
+      emit('update:isLocked', false);
     }
     await loadSessions();
   } catch (e) {
@@ -129,6 +145,8 @@ watch(
         const updated = await updateSession(activeSession.value!.id, {
           title: newMessages.length <= 2 ? 'New Practice' : (activeSession.value!.title || 'New Practice'),
           messages: newMessages,
+          jlpt_level: props.currentJlpt,
+          teaching_mode: teachingMode.value,
         });
         activeSession.value = updated;
         await loadSessions();
@@ -153,6 +171,22 @@ watch(() => props.messages.length, () => {
 
 onMounted(async () => {
   await loadSessions();
+  const savedActiveId = localStorage.getItem('koto_active_session_id');
+  if (savedActiveId && sessions.value.length > 0) {
+    const found = sessions.value.find(s => s.id === Number(savedActiveId));
+    if (found) {
+      await handleSelectSession(found);
+      scrollToBottom();
+      const savedMode = localStorage.getItem('koto_teaching_mode');
+      if (savedMode === 'bilingual' || savedMode === 'immersion') {
+        teachingMode.value = savedMode;
+      }
+      return;
+    }
+  }
+  if (sessions.value.length > 0 && props.messages.length > 1) {
+    await handleSelectSession(sessions.value[0]);
+  }
   scrollToBottom();
   const savedMode = localStorage.getItem('koto_teaching_mode');
   if (savedMode === 'bilingual' || savedMode === 'immersion') {
@@ -164,6 +198,11 @@ onMounted(async () => {
 async function handleSend(text: string) {
   if (!text.trim() || loading.value) return;
 
+  if (!isSessionLocked.value) {
+    isSessionLocked.value = true;
+    emit('update:isLocked', true);
+  }
+
   const userMsg: ChatMessage = {
     id: `msg-${Date.now()}`,
     role: 'user',
@@ -173,6 +212,24 @@ async function handleSend(text: string) {
 
   const updatedMessages = [...props.messages, userMsg];
   emit('update:messages', updatedMessages);
+
+  // If in an unsaved new session (no activeSession), save session to DB on first message send
+  if (!activeSession.value) {
+    try {
+      const created = await createSession({
+        title: 'New Practice',
+        messages: updatedMessages,
+        jlpt_level: props.currentJlpt,
+        teaching_mode: teachingMode.value
+      });
+      activeSession.value = created;
+      localStorage.setItem('koto_active_session_id', String(created.id));
+      await loadSessions();
+    } catch (e) {
+      console.error('Failed to save session to database:', e);
+    }
+  }
+
   loading.value = true;
   streamingMessageId.value = `msg-stream-${Date.now()}`;
 
@@ -253,7 +310,7 @@ function handleSaveVocab(word: string) {
       :activeSession="activeSession"
       :currentJlpt="currentJlpt"
       v-model:teachingMode="teachingMode"
-      :isLocked="isTeachingModeLocked"
+      :isLocked="isSessionLocked"
     />
 
     <!-- Main Content Area -->

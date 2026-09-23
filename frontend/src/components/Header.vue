@@ -6,6 +6,7 @@ defineProps<{
   currentJlpt: JLPTLevel;
   hasApiServer?: boolean;
   activeTab: TabType;
+  isLocked?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -71,10 +72,13 @@ const tabNavs: { id: TabType; label: string; jp: string; icon: any }[] = [
             <span class="text-xs text-zinc-400 mr-1">JLPT:</span>
             <select
               :value="currentJlpt"
-              @change="(e) => onSelectJlpt((e.target as HTMLSelectElement).value as JLPTLevel)"
-              class="bg-zinc-900 border border-zinc-700 text-red-400 text-xs font-bold rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-red-500"
+              :disabled="isLocked"
+              @change="(e) => !isLocked && onSelectJlpt((e.target as HTMLSelectElement).value as JLPTLevel)"
+              class="bg-zinc-900 border border-zinc-700 text-red-400 text-xs font-bold rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <option v-for="lvl in jlptLevels" :key="lvl" :value="lvl">{{ lvl }}</option>
+              <option v-for="lvl in jlptLevels" :key="lvl" :value="lvl">
+                {{ isLocked && currentJlpt === lvl ? '🔒 ' + lvl : lvl }}
+              </option>
             </select>
           </div>
         </div>
@@ -91,15 +95,19 @@ const tabNavs: { id: TabType; label: string; jp: string; icon: any }[] = [
             <button
               v-for="lvl in jlptLevels"
               :key="lvl"
-              @click="onSelectJlpt(lvl)"
+              @click="!isLocked && onSelectJlpt(lvl)"
+              :disabled="isLocked"
               :class="[
-                'px-2.5 py-1 text-xs font-bold rounded transition-all',
+                'px-2.5 py-1 text-xs font-bold rounded transition-all flex items-center gap-1',
+                isLocked ? 'cursor-not-allowed' : 'cursor-pointer',
                 currentJlpt === lvl
-                  ? 'bg-red-600 text-white shadow-md shadow-red-600/20 ring-1 ring-red-400'
-                  : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                  ? (isLocked ? 'bg-red-950/60 text-red-300 border border-red-900/40 shadow-md' : 'bg-red-600 text-white shadow-md shadow-red-600/20 ring-1 ring-red-400')
+                  : (isLocked ? 'text-zinc-600 opacity-60' : 'text-zinc-400 hover:text-white hover:bg-zinc-800')
               ]"
+              :title="isLocked ? 'JLPT level is locked for this session' : `Select ${lvl}`"
             >
-              {{ lvl }}
+              <span v-if="isLocked && currentJlpt === lvl">🔒</span>
+              <span>{{ lvl }}</span>
             </button>
           </div>
 

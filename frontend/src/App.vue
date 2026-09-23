@@ -14,6 +14,7 @@ import type { TabType, JLPTLevel, UserStats, ChatMessage } from './types';
 const activeTab = ref<TabType>('chat');
 const settingsModalOpen = ref<boolean>(false);
 const currentJlpt = ref<JLPTLevel>('N5');
+const isSessionLocked = ref<boolean>(false);
 const hasApiServer = ref<boolean>(true);
 
 // Mastered Flashcard IDs
@@ -24,7 +25,7 @@ const chatMessages = ref<ChatMessage[]>([
   {
     id: 'welcome-1',
     role: 'assistant',
-    content: 'Welcome to Koto Sensei Japanese Studio. I am your AI language tutor powered by Gemini.\n\nHow can I support your Japanese learning today? You can practice conversation, ask grammar questions, or request vocabulary explanations!',
+    content: 'Welcome to Koto Sensei Japanese Studio.\n\nHow can I support your Japanese learning today? You can practice conversation, ask grammar questions, or request vocabulary explanations!',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     jlptLevel: 'N5'
   }
@@ -148,6 +149,7 @@ function handleResetStats() {
       :stats="userStats"
       :hasApiServer="hasApiServer"
       :activeTab="activeTab"
+      :isLocked="activeTab === 'chat' && isSessionLocked"
       @update:jlpt="(lvl) => currentJlpt = lvl"
       @update:tab="(tab) => activeTab = tab"
       @open-settings="settingsModalOpen = true"
@@ -163,6 +165,8 @@ function handleResetStats() {
         :currentJlpt="currentJlpt"
         :savedVocabIds="userStats.savedVocabIds"
         @update:messages="handleMessagesUpdate"
+        @update:jlpt="(lvl) => currentJlpt = lvl"
+        @update:isLocked="(locked) => isSessionLocked = locked"
         @save-vocab="toggleSavedVocab"
         @clear-messages="handleClearMessages"
       />
@@ -178,8 +182,6 @@ function handleResetStats() {
       <!-- Dictionary Tab -->
       <DictionaryView
         v-else-if="activeTab === 'dictionary'"
-        :savedVocabIds="userStats.savedVocabIds"
-        @toggle-saved-vocab="toggleSavedVocab"
       />
 
       <!-- Listening Lab Tab -->

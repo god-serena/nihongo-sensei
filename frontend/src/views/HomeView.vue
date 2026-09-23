@@ -37,8 +37,6 @@
       <!-- Dictionary Tab -->
       <DictionaryView
         v-else-if="activeTab === 'dictionary'"
-        :savedVocabIds="userStats.savedVocabIds"
-        @toggle-saved-vocab="toggleSavedVocab"
       />
 
       <!-- Listening Lab Tab -->
@@ -113,7 +111,7 @@ const chatMessages = ref([
   {
     id: 'welcome-1',
     role: 'assistant',
-    content: 'Welcome to Koto Sensei Japanese Studio. How can I support your Japanese learning today?',
+    content: 'Welcome to Koto Sensei Japanese Studio.\n\nHow can I support your Japanese learning today? You can practice conversation, ask grammar questions, or request vocabulary explanations!',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     jlptLevel: 'N5'
   }

@@ -23,6 +23,9 @@ const emit = defineEmits<{
       </span>
       <span v-else class="text-xs font-semibold text-zinc-200">1-on-1 Practice Session</span>
       <span class="text-xs text-zinc-500 hidden sm:inline">• Target Level: <strong class="text-red-400">{{ currentJlpt }}</strong></span>
+      <span v-if="isLocked" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-950/80 text-amber-400 border border-amber-800/60" title="Session parameters locked">
+        🔒 Locked
+      </span>
     </div>
 
     <!-- Teaching Mode Toggle Badge -->
@@ -39,8 +42,8 @@ const emit = defineEmits<{
         ]"
         :title="isLocked ? 'Teaching mode is locked for this session' : 'Bilingual mode: English explanations + Japanese phrase demonstrations'"
       >
-        <span>{{ isLocked ? '🔒' : '🌐' }}</span>
-        <span>{{ isLocked ? 'Bilingual Teacher' : 'Bilingual Teacher' }}</span>
+        <span>{{ isLocked && teachingMode === 'bilingual' ? '🔒' : '🌐' }}</span>
+        <span>Bilingual Teacher</span>
       </button>
       <button
         @click="!isLocked && emit('update:teachingMode', 'immersion')"
@@ -54,8 +57,8 @@ const emit = defineEmits<{
         ]"
         :title="isLocked ? 'Teaching mode is locked for this session' : 'Full Immersion mode: 100% Japanese responses (日本語オンリー)'"
       >
-        <span>{{ isLocked ? '🔒' : '🇯🇵' }}</span>
-        <span>{{ isLocked ? 'Full Immersion' : 'Full Immersion (日本語)' }}</span>
+        <span>{{ isLocked && teachingMode === 'immersion' ? '🔒' : '🇯🇵' }}</span>
+        <span>Full Immersion (日本語)</span>
       </button>
     </div>
   </div>
