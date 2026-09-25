@@ -61,5 +61,5 @@
 
 ## Milestone 7: Web App Refinement, PWA & Open-Source Launch Setup
 - [x] **7.1 Architecture Cleanup**: Remove unused `/electron` directory and legacy `frontend/src/main.js`; update `AGENTS.md` and `README.md` to reflect Web/PWA architecture.
-- [ ] **7.2 PWA & Web App Capabilities**: Add Web App manifest (`manifest.webmanifest`), application icons, and PWA standalone installation capability to `/frontend`.
+- [x] **7.2 PWA & Web App Capabilities**: Add Web App manifest (`manifest.webmanifest`), application icons, and PWA standalone installation capability to `/frontend`.
 - [ ] **7.3 Docker & GitHub Launch Setup**: Refine `docker-compose.yml` for seamless 1-command startup (`docker compose up -d`), update `README.md` quickstart guide, and verify end-to-end test suite (`pytest` & `vitest`).
