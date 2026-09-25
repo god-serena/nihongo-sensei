@@ -69,9 +69,3 @@ docker compose exec frontend npm test
 ```
 
 ---
-
-## 📄 License & Personal Usage Disclaimer
-
-MIT License. Open source for Japanese language learners and developers.
-
-> **Disclaimer:** This repository is maintained primarily for personal learning and self-directed study.
