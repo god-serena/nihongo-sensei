@@ -165,7 +165,7 @@ function scrollToBottom() {
   });
 }
 
-watch(() => props.messages.length, () => {
+watch(() => props.messages?.length, () => {
   scrollToBottom();
 });
 

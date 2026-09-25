@@ -28,7 +28,7 @@ const tabNavs: { id: TabType; label: string; jp: string; icon: any }[] = [
   // { id: 'analyzer', label: 'Grammar Analyzer', jp: '解析', icon: Sparkles },
   // { id: 'listening', label: 'Listening Lab', jp: '聴解', icon: Headphones },
   { id: 'documents', label: 'Study Materials', jp: '教材', icon: Upload },
-  // { id: 'summaries', label: 'Lesson Insights', jp: '分析', icon: FileText },
+  { id: 'summaries', label: 'Lesson Insights', jp: '分析', icon: FileText },
   { id: 'stats', label: 'Study Progress', jp: '記録', icon: BarChart3 }
 ];
 </script>

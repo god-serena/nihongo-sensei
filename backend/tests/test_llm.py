@@ -32,7 +32,7 @@ async def test_openai_stream():
 
         mock_stream.assert_called_once_with(
             "POST",
-            "http://localhost:8000/v1/chat/completions",
+            f"{client.base_url}/chat/completions",
             headers={"Authorization": "Bearer test-key"},
             json={
                 "model": "test-model",

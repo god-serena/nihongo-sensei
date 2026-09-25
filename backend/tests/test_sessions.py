@@ -3,8 +3,8 @@
 import pytest
 from starlette.testclient import TestClient
 from app.main import app
-from app.database import SessionLocal
-from app.models import Session as SessionModel
+from app.database import engine, SessionLocal
+from app.models import Base, Session as SessionModel
 
 
 @pytest.fixture()
@@ -16,6 +16,7 @@ def client():
 @pytest.fixture()
 def db_session():
     """Yield a clean database session with no sessions."""
+    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         db.query(SessionModel).delete()
@@ -38,7 +39,7 @@ def sample_session(db_session):
 # ── GET /api/sessions ────────────────────────────────────────────────────────
 
 
-def test_list_sessions_empty(client):
+def test_list_sessions_empty(client, db_session):
     """GET /api/sessions returns empty list when no sessions exist."""
     response = client.get("/api/sessions")
     assert response.status_code == 200
@@ -52,7 +53,7 @@ def test_list_sessions_returns_sessions(client, sample_session):
     data = response.json()
     assert len(data) == 1
     assert data[0]["title"] == "New Practice"
-    assert data[0]["messages"] == []
+    assert data[0]["message_count"] == 0
     assert data[0]["jlpt_level"] == "N4"
     assert data[0]["teaching_mode"] == "bilingual"
 

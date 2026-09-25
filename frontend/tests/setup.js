@@ -41,3 +41,9 @@ window.requestAnimationFrame = (cb) => {
     return ++_rafId;
 };
 window.cancelAnimationFrame = () => {};
+
+// ── Element.prototype.scrollIntoView ─────────────────────────────────────────
+if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = () => {};
+}
+

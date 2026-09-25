@@ -30,7 +30,7 @@ describe("HomeView.vue", () => {
             global: {
                 plugins: [pinia],
                 stubs: {
-                    ChatArea: { template: "<div class='stub-chat-area'>ChatArea Stub</div>" },
+                    SenseiChat: { template: "<div class='stub-chat-area'>ChatArea Stub</div>" },
                     DocumentManager: {
                         template: "<div class='stub-doc-manager'>DocumentManager Stub</div>",
                     },
