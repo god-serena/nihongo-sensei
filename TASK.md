@@ -59,7 +59,7 @@
 
 ---
 
-## Milestone 7: Electron Integration & Packaging
-- [ ] **7.1 Electron Shell**: Initialize Electron main process in `/electron/main.js` to manage main window and preload script.
-- [ ] **7.2 Sidecar Management**: Add process spawner in Electron main process to spawn `pyinstaller`-packaged FastAPI backend on startup and kill on exit.
-- [ ] **7.3 Packaging Configuration**: Configure `electron-builder` in `package.json` for Windows NSIS builds.
+## Milestone 7: Web App Refinement, PWA & Open-Source Launch Setup
+- [x] **7.1 Architecture Cleanup**: Remove unused `/electron` directory and legacy `frontend/src/main.js`; update `AGENTS.md` and `README.md` to reflect Web/PWA architecture.
+- [ ] **7.2 PWA & Web App Capabilities**: Add Web App manifest (`manifest.webmanifest`), application icons, and PWA standalone installation capability to `/frontend`.
+- [ ] **7.3 Docker & GitHub Launch Setup**: Refine `docker-compose.yml` for seamless 1-command startup (`docker compose up -d`), update `README.md` quickstart guide, and verify end-to-end test suite (`pytest` & `vitest`).

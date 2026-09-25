@@ -1,10 +1,10 @@
 # AGENTS.md — KotoSensei (琴先生) Development Protocol
 
 ## 1. Project Context & Goals
-KotoSensei is a local, voiced Japanese language teacher desktop app.
-- **Architecture**: Electron desktop shell + FastAPI Python sidecar + Vue 3 frontend + PostgreSQL (`pgvector` extension — no separate vector DB service).
+KotoSensei is a local, voiced Japanese language teacher Web & PWA application.
+- **Architecture**: Vue 3 + Tailwind CSS Web & PWA Frontend + FastAPI Python service + PostgreSQL (`pgvector` extension — no separate vector DB service).
 - **Core Features**: Local/frontier LLM orchestration, RAG document search, JMdict dictionary lookups (pluggable per language), structured session summaries, interruptible (barge-in) audio/speech streaming.
-- **Deployment model**: local-first, single-user. No hosting costs beyond optional frontier LLM API usage.
+- **Deployment model**: local-first, 1-command Docker Compose setup (`docker compose up -d`). No hosting costs beyond optional frontier LLM API usage.
 
 ---
 
@@ -18,19 +18,15 @@ Maintain strict separation across the codebase layers:
   - External language dictionaries live in `backend/app/dictionaries/` behind the shared `DictionaryProvider` interface (`base.py` + `registry.py`) — exact-match lookups, kept separate from RAG's embedding search. New languages plug in here without touching `rag.py`.
   - API endpoints MUST be defined inside modular router files under `backend/app/routers/` (e.g., `routers/chat.py`, `routers/rag.py`, `routers/dictionary.py`).
   - `backend/app/main.py` MUST NOT declare route logic directly; it should only import and register routers via `app.include_router()`.
-  - LLM providers (Ollama, LM Studio, Gemini, OpenAI) live behind the unified interface in `backend/app/llm.py`. New providers extend this — never add one-off call sites elsewhere.
+  - LLM providers (Ollama, LM Studio, Llama Serve, Gemini, OpenAI) live behind the unified interface in `backend/app/llm.py`. New providers extend this — never add one-off call sites elsewhere.
   - Session summaries (`summaries.py`) are always structured JSON (topics, new vocab, mistakes) — never a raw transcript dump.
   - Websocket protocol: every message type is designed alongside a `cancel` handler. Barge-in (interrupting TTS mid-response) is a first-class concern; current implementation is push-to-talk (V1), not VAD-based auto-interrupt — don't assume the latter exists.
 
 - **Frontend (`/frontend`)**:
   - Vue 3 using **Composition API with `<script setup>` syntax only**.
-  - Vite, Tailwind CSS, Pinia (state management).
-  - **Centralized API Client**: All frontend API calls MUST use a centralized client module in `frontend/src/services/api.js`. Never write raw `fetch()` or `axios` calls directly inside `.vue` components.
+  - Vite, Tailwind CSS, Pinia (state management), Web App Manifest (`manifest.webmanifest`).
+  - **Centralized API Client**: All frontend API calls MUST use a centralized client module in `frontend/src/services/api.ts`. Never write raw `fetch()` or `axios` calls directly inside `.vue` components.
   - **Testing**: Vitest (not Jest) — `package.json`'s `"test"` script must point to `vitest run`. Vitest was chosen specifically because it shares Vite's config/transforms, so `.vue` SFCs need no extra transform setup. Every component under `src/components/` gets a matching spec under `tests/components/`.
-
-- **Desktop Shell (`/electron`)**:
-  - Electron main process (`electron/main.js`) handles window creation and spawns/manages the FastAPI sidecar binary (packaged via `pyinstaller`), including clean shutdown on quit.
-  - Renderer has no direct DB or filesystem access — talks to the backend only via the documented HTTP/WebSocket API.
 
 ---
 
