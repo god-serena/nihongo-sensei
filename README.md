@@ -2,12 +2,14 @@
 
 > [!NOTE]
 > **Personal Learning Project**: KotoSensei is created strictly for **personal use** and tailored to support my own **personal way of learning** Japanese and building local AI applications. Features, workflows, and tools in this repository are designed around my specific study preferences and technical experimentation.
+>
+> Built by Antigravity alongside local LLMs, specifically Qwen 3.6 and Qwen 3.8.
 
 **KotoSensei** is a local-first, AI-powered voiced Japanese language teacher and study studio. It features interactive conversation, real-time dictionary lookups (JMdict), RAG document referencing, structured session summaries, and support for local (Llama Serve, Ollama, LM Studio) and frontier LLMs.
 
 ---
 
-## 🎯 Purpose & Personal Learning Focus
+## Purpose & Personal Learning Focus
 
 This project serves as a personal sandbox designed to combine audio/speech processing, local LLM orchestration, and Japanese language acquisition into a single unified workflow:
 * **Custom Learning Workflow:** Tailored specifically for interactive Japanese speech practice, vocabulary lookup, and personal study document retrieval.
@@ -16,7 +18,7 @@ This project serves as a personal sandbox designed to combine audio/speech proce
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 graph TD
@@ -36,7 +38,7 @@ graph TD
 
 ---
 
-## ⚡ Quick Start with Docker
+## Quick Start with Docker
 
 ### Prerequisites
 - Docker & Docker Compose installed
@@ -51,14 +53,12 @@ cd language-sensei
 docker compose up -d
 ```
 
-### 2. Access Applications
-* **Frontend Web App & PWA:** [http://localhost:5173](http://localhost:5173)
-* **Backend API Documentation:** [http://localhost:8080/docs](http://localhost:8080/docs) (or `http://localhost:8000/docs`)
-* **PostgreSQL Database:** `localhost:5432`
+### 2. Frontend
+* [http://localhost:5173](http://localhost:5173)
 
 ---
 
-## 🧪 Running Automated Tests
+## Running Automated Tests
 
 ```bash
 # Run backend tests (pytest)
@@ -69,3 +69,7 @@ docker compose exec frontend npm test
 ```
 
 ---
+
+## Development & Credits
+
+This project was built by Antigravity alongside local LLMs, specifically Qwen 3.6 and Qwen 3.8.

@@ -3,12 +3,9 @@ __pycache__/
 *.py[cod]
 .venv/
 backend/data/
-
-# Node / Electron
 node_modules/
 dist/
 out/
-
 # Local Environment & Database
 .env
 *.db
@@ -16,5 +13,6 @@ out/
 .pi
 plans
 env.d.ts
-# Dictionary archive
 backend/JMdict_e.gz
+TASK.md
+AGENTS.md
