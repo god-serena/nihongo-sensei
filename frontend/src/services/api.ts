@@ -1,6 +1,6 @@
 import { ChatMessage, JLPTLevel, AppSettings, Session, DictionaryEntry } from '../types';
 
-const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api').replace(/\/$/, '');
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://0.0.0.0:8000/api').replace(/\/$/, '');
 
 function buildUrl(path: string): string {
   const cleanPath = path.startsWith('/api') ? path.slice(4) : path;
@@ -178,9 +178,25 @@ export async function testLlmConnection(settings: Partial<AppSettings>): Promise
       const { value } = await reader.read();
       const text = new TextDecoder().decode(value);
       if (text.includes('"error":')) {
-        const jsonMatch = text.match(/\{.*"error":\s*"(.*)"\}/);
-        if (jsonMatch && jsonMatch[1]) {
-          return { success: false, message: jsonMatch[1] };
+        try {
+          const lines = text.split('\n');
+          for (const line of lines) {
+            if (line.includes('"error":')) {
+              const dataStr = line.replace(/^data:\s*/, '').trim();
+              const parsed = JSON.parse(dataStr);
+              if (parsed.error) {
+                return {
+                  success: false,
+                  message: typeof parsed.error === 'string' ? parsed.error : (parsed.error.message || JSON.stringify(parsed.error)),
+                };
+              }
+            }
+          }
+        } catch (e) {
+          const jsonMatch = text.match(/\{.*"error":\s*"(.*)"\}/);
+          if (jsonMatch && jsonMatch[1]) {
+            return { success: false, message: jsonMatch[1] };
+          }
         }
       }
     }

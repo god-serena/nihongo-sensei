@@ -1,6 +1,18 @@
 # KotoSensei (琴先生) — Voiced Japanese Language Studio & PWA
 
-**KotoSensei** is a local-first, AI-powered voiced Japanese language teacher and study studio. It features interactive conversation, real-time dictionary lookups (JMdict), RAG document referencing, structured session summaries, and support for local (Llama Serve, Ollama, LM Studio) and frontier LLMs (Gemini, OpenAI).
+> [!NOTE]
+> **Personal Learning Project**: KotoSensei is created strictly for **personal use** and tailored to support my own **personal way of learning** Japanese and building local AI applications. Features, workflows, and tools in this repository are designed around my specific study preferences and technical experimentation.
+
+**KotoSensei** is a local-first, AI-powered voiced Japanese language teacher and study studio. It features interactive conversation, real-time dictionary lookups (JMdict), RAG document referencing, structured session summaries, and support for local (Llama Serve, Ollama, LM Studio) and frontier LLMs.
+
+---
+
+## 🎯 Purpose & Personal Learning Focus
+
+This project serves as a personal sandbox designed to combine audio/speech processing, local LLM orchestration, and Japanese language acquisition into a single unified workflow:
+* **Custom Learning Workflow:** Tailored specifically for interactive Japanese speech practice, vocabulary lookup, and personal study document retrieval.
+* **Hands-on AI Exploration:** Built to experiment with local-first architectures (`pgvector`, `faster-whisper`, VOICEVOX/Edge-TTS, FastAPI, Vue 3 PWA).
+* **Non-Commercial Scope:** Maintained strictly for personal education and individual self-study.
 
 ---
 
@@ -35,9 +47,6 @@ graph TD
 git clone https://github.com/yourname/language-sensei.git
 cd language-sensei
 
-# Copy environment template if needed
-cp .env.example .env 2>/dev/null || true
-
 # Start PostgreSQL, FastAPI Backend, and Vue Frontend
 docker compose up -d
 ```
@@ -46,16 +55,6 @@ docker compose up -d
 * **Frontend Web App & PWA:** [http://localhost:5173](http://localhost:5173)
 * **Backend API Documentation:** [http://localhost:8080/docs](http://localhost:8080/docs) (or `http://localhost:8000/docs`)
 * **PostgreSQL Database:** `localhost:5432`
-
----
-
-## 📱 Installing as a Desktop or Mobile App (PWA)
-
-KotoSensei includes a **Web App Manifest** for standalone app execution without heavy Electron overhead:
-
-1. Open [http://localhost:5173](http://localhost:5173) in Chrome, Brave, or Edge.
-2. Click **Install KotoSensei** in the address bar (or Menu $\rightarrow$ *Save and Share* $\rightarrow$ *Install KotoSensei*).
-3. The app will launch in its own borderless desktop window with a taskbar icon!
 
 ---
 
@@ -71,5 +70,8 @@ docker compose exec frontend npm test
 
 ---
 
-## 📄 License
+## 📄 License & Personal Usage Disclaimer
+
 MIT License. Open source for Japanese language learners and developers.
+
+> **Disclaimer:** This repository is maintained primarily for personal learning and self-directed study.

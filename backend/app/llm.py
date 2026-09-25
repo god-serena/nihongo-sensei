@@ -37,8 +37,13 @@ class LLMClient:
                 self.base_url = f"{self.base_url}/v1"
 
             is_dev = os.getenv("IS_DEV", "false").lower() in ("true", "1") or os.path.exists("/.dockerenv")
-            if is_dev and ("localhost" in self.base_url or "127.0.0.1" in self.base_url):
-                self.base_url = self.base_url.replace("localhost", "host.docker.internal").replace("127.0.0.1", "host.docker.internal")
+            if is_dev and ("localhost" in self.base_url or "127.0.0.1" in self.base_url or "0.0.0.0" in self.base_url):
+                self.base_url = (
+                    self.base_url
+                    .replace("localhost", "host.docker.internal")
+                    .replace("127.0.0.1", "host.docker.internal")
+                    .replace("0.0.0.0", "host.docker.internal")
+                )
                 logger.info(f"Development environment detected: mapped local LLM base_url to {self.base_url}")
 
             if not self.model:
